@@ -124,7 +124,7 @@ export default class FormDesign extends PureComponent {
           active: true
         });
         const activeItem = canvasItems.find(item => item.active === true);
-        canvasItems.forEach((item, index) => (item.gridIndex = index));
+        canvasItems.forEach((item, index) => (item.index = index));
         return {
           activeItem,
           canvasItems
@@ -192,7 +192,6 @@ export default class FormDesign extends PureComponent {
     });
   };
   moveLayout = (event, dataSet, comp) => {
-    console.log('文本块dragover事件')
     if (dataSet) {
       //排序时在容器内item项上移动
       const hoverBoundingRect = findDOMNode(comp).getBoundingClientRect();
@@ -210,7 +209,6 @@ export default class FormDesign extends PureComponent {
   //容器dragover事件
   containerDragOver = event => {
     if (event.target.className === "wf-formcanvas-layout-inner") {
-      console.log('容器dragover事件')
       const itemNodes = event.target.children;
       const len = itemNodes.length;
       if (len >= 1) {
@@ -220,8 +218,6 @@ export default class FormDesign extends PureComponent {
 
         if (event.clientY > BoundingLastChild.bottom) {
           this.onChangeDropIndex(len - 1);
-        }else{
-          this.onChangeDropIndex(-1);
         }
       } else {
         this.onChangeDropIndex(-1);
@@ -246,6 +242,7 @@ export default class FormDesign extends PureComponent {
         return FieldCorAttr[item.type].showField({
           dataSet: { ...item },
           key: index,
+          index:index,
           gridIndex: index,
           currentDropIndex,
           moveField: this.moveField,
