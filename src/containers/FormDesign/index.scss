@@ -121,7 +121,7 @@ $padding: 40px;
     margin-bottom: 0;
   }
   .grid{
-    border:1px dotted red;
+    border: 1px dotted red;
     min-height: 50px;
     height: auto;
     .cell{
@@ -248,9 +248,6 @@ $padding: 40px;
   
   .flex-item, {
     flex: 1 1 0;
-    // div{
-    //   flex: 1 1
-    // }
     >div{
       >div{
         width:100%;
@@ -309,9 +306,6 @@ html:not(.wf-cursor-move) .wf-component.active {
     .grid{
       border:0;
     }
-  }
-  & > :last-child {
-    // border-bottom: 1px solid red;
   }
   .grid{
     border:1px solid red;

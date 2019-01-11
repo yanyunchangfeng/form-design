@@ -6,8 +6,9 @@ class FormHidden extends PureComponent {
   render() {
     const { dataSet, isDragging, activeField, removeField } = this.props;
     const {
-      attrInfo: { titleValue, row, col },
-      active
+      attrInfo: { titleValue},
+      active,
+      cellIndex
     } = dataSet;
 
     let status = "";
@@ -23,14 +24,14 @@ class FormHidden extends PureComponent {
           className="wf-remove icon icon-close"
           onMouseDown={event => {
             event.stopPropagation();
-            removeField(dataSet, row, col);
+            removeField(dataSet, cellIndex);
           }}
         />
         <div
           className="wf-overlay wf-drag"
           onMouseDown={event => {
             event.stopPropagation();
-            activeField(dataSet, active, row, col);
+            activeField(dataSet, active, cellIndex);
           }}
         />
         <div className="wf-view">

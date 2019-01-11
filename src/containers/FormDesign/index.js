@@ -136,12 +136,12 @@ export default class FormDesign extends PureComponent {
       }
     );
   };
-  onDrop = (item, index, row, col) => {
+  onDrop = (item, index, cellIndex) => {
     this.data$.subscribe(dragData => {
       if (this.state.dropTags.indexOf(dragData.tag) > -1) {
         this.updateGridState(item);
       } else {
-        this.updateBaseState(item, index, row, col);
+        this.updateBaseState(item, index, cellIndex);
       }
     });
   };
@@ -260,7 +260,12 @@ export default class FormDesign extends PureComponent {
       this.setState(
         prevState => {
           let canvasItems = [...prevState.canvasItems];
-          canvasItems.forEach(item => (item.active = false));
+          // canvasItems.forEach(item => (item.active = false));
+          canvasItems.forEach(item => {
+            item.active = false;
+            const cells = item.attrInfo.grid.cells;
+            cells.forEach(cell => cell.active = false);
+          });
           canvasItems[gridIndex].active = true;
           const cells = canvasItems[gridIndex].attrInfo.grid.cells;
           cells.forEach(item => item.active = false)

@@ -6,7 +6,8 @@ export default class DropDownFieldAttr extends PureComponent {
     const { activeItem, onSave } = this.props;
     const{
      index,
-     attrInfo
+     attrInfo,
+     cellIndex
     } = activeItem;
     const {row,col} = attrInfo;
     const updateAttrInfo = {
@@ -14,7 +15,7 @@ export default class DropDownFieldAttr extends PureComponent {
       ...item
     };
     const updateActiveItem = {...activeItem,attrInfo:updateAttrInfo}
-    onSave(updateActiveItem,index,row,col);
+    onSave(updateActiveItem, index, cellIndex);
   };
   handleAddOptions({ index, dropdownoptions }) {
     dropdownoptions = [...dropdownoptions, { key: "", value: "" }];

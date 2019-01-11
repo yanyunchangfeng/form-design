@@ -10,19 +10,18 @@ const radioStyle = {
 export default class DateSectionAttr extends PureComponent {
   handleChange = item => {
     const { activeItem, onSave } = this.props;
-    const { index, attrInfo } = activeItem;
-    const { row, col } = attrInfo;
+    const { index, attrInfo, cellIndex } = activeItem;
     const updateAttrInfo = {
       ...attrInfo,
       ...item
     };
     const updateActiveItem = { ...activeItem, attrInfo: updateAttrInfo };
-    onSave(updateActiveItem, index, row, col);
+    onSave(updateActiveItem, index, cellIndex);
   };
   render() {
     const {
       activeItem: {
-        attrInfo: { titleValue, tipValue, name, verifyValue,formatValue }
+        attrInfo: { titleValue, tipValue, name, verifyValue, formatValue }
       }
     } = this.props;
 

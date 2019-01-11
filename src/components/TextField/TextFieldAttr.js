@@ -3,18 +3,13 @@ import { Checkbox } from "antd";
 export default class TextFieldAttr extends PureComponent {
   handleChange = item => {
     const { activeItem, onSave } = this.props;
-    const{
-     index,
-     attrInfo,
-     cellIndex
-    } = activeItem;
-    // const {row,col} = attrInfo;
+    const { index, attrInfo, cellIndex } = activeItem;
     const updateAttrInfo = {
       ...attrInfo,
       ...item
     };
-    const updateActiveItem = {...activeItem,attrInfo:updateAttrInfo}
-    onSave(updateActiveItem, index,cellIndex);
+    const updateActiveItem = { ...activeItem, attrInfo: updateAttrInfo };
+    onSave(updateActiveItem, index, cellIndex);
   };
   render() {
     const {

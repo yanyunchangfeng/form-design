@@ -8,6 +8,7 @@ class TextNumberField extends PureComponent {
     const {
       attrInfo: { titleValue, tipValue, verifyValue,row,col},
       active,
+      cellIndex
     } = dataSet;
     let status = "";
     if (active) {
@@ -22,14 +23,14 @@ class TextNumberField extends PureComponent {
           className="wf-remove icon icon-close"
           onMouseDown={event => {
             event.stopPropagation();
-            removeField(dataSet,row,col);
+            removeField(dataSet,cellIndex);
           }}
         />
         <div
           className="wf-overlay wf-drag"
           onMouseDown={event => {
             event.stopPropagation()
-            activeField(dataSet,active,row,col);
+            activeField(dataSet,active,cellIndex);
           }}
         />
         <div className="wf-view">

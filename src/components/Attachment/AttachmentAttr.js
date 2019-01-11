@@ -3,17 +3,13 @@ import { Checkbox } from "antd";
 export default class AttachmentAttr extends PureComponent {
   handleChange = item => {
     const { activeItem, onSave } = this.props;
-    const{
-     index,
-     attrInfo
-    } = activeItem;
-    const {row,col} = attrInfo;
+    const { index, attrInfo, cellIndex  } = activeItem;
     const updateAttrInfo = {
       ...attrInfo,
       ...item
     };
-    const updateActiveItem = {...activeItem,attrInfo:updateAttrInfo}
-    onSave(updateActiveItem,index,row,col);
+    const updateActiveItem = { ...activeItem, attrInfo: updateAttrInfo };
+    onSave(updateActiveItem, index, cellIndex);
   };
   render() {
     const {

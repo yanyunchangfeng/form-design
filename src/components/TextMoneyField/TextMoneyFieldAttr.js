@@ -5,15 +5,15 @@ export default class TextNumberFieldAttr extends PureComponent {
     const { activeItem, onSave } = this.props;
     const{
      index,
-     attrInfo
+     attrInfo,
+     cellIndex
     } = activeItem;
-    const {row,col} = attrInfo;
     const updateAttrInfo = {
       ...attrInfo,
       ...item
     };
     const updateActiveItem = {...activeItem,attrInfo:updateAttrInfo}
-    onSave(updateActiveItem, index,row,col);
+    onSave(updateActiveItem, index, cellIndex);
   };
   render() {
     const {
