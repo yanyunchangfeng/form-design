@@ -10,7 +10,7 @@ import BaseFields from "../../components/BaseFields";
 import { Collapse } from "antd";
 import LayoutFields from "../../components/LayoutFields";
 import FieldCorAttr from "../../utils/field-cor-attr.js";
-import DeepClone from "../../utils/common.js";
+import Util from "../../utils/common.js";
 import emitter from "../../directive/dragdropdirective";
 const Panel = Collapse.Panel;
 const layoutItems = [
@@ -104,7 +104,7 @@ export default class FormDesign extends PureComponent {
   updateGridState = item => {
     this.setState(
       prevState => {
-        const layoutInitValue = DeepClone.deepClone({
+        const layoutInitValue = Util.deepClone({
           ...FieldCorAttr[item.type].initValues
         });
         const attrInfo = {
@@ -124,7 +124,7 @@ export default class FormDesign extends PureComponent {
           active: true
         });
         const activeItem = canvasItems.find(item => item.active === true);
-        canvasItems.forEach((item, index) => (item.index = index));
+        canvasItems.forEach((item, index) => (item.gridIndex = index));
         return {
           activeItem,
           canvasItems
@@ -153,20 +153,17 @@ export default class FormDesign extends PureComponent {
        })
      }
   }
-  updateBaseState(item, index, row, col) {
+  updateBaseState(item, gridIndex, cellIndex) {
     this.setState(
       prevState => {
         let canvasItems = [...prevState.canvasItems];
-        const layout = canvasItems[index].attrInfo.layout;
-        layout.forEach(val => {
-          val.col.forEach(value => (value.active = false));
-        });
-        layout[row]["col"][col].active = true;
-        layout[row]["col"][col].item
-          ? (layout[row]["col"][col].item = layout[row]["col"][col].item)
-          : (layout[row]["col"][col].item = item);
-        let activeItem = layout[row]["col"][col].item;
-        activeItem.index = index;
+        console.log(canvasItems)
+        const cells = canvasItems[gridIndex].attrInfo.grid.cells;
+        cells.forEach(item => item.active = false);
+        cells[cellIndex].active = true;
+        cells[cellIndex].item = item;
+        let activeItem = cells[cellIndex].item;
+        activeItem.index = gridIndex;
         return {
           currentDropIndex: -2,
           activeItem,
@@ -195,6 +192,7 @@ export default class FormDesign extends PureComponent {
     });
   };
   moveLayout = (event, dataSet, comp) => {
+    console.log('文本块dragover事件')
     if (dataSet) {
       //排序时在容器内item项上移动
       const hoverBoundingRect = findDOMNode(comp).getBoundingClientRect();
@@ -212,6 +210,7 @@ export default class FormDesign extends PureComponent {
   //容器dragover事件
   containerDragOver = event => {
     if (event.target.className === "wf-formcanvas-layout-inner") {
+      console.log('容器dragover事件')
       const itemNodes = event.target.children;
       const len = itemNodes.length;
       if (len >= 1) {
@@ -221,6 +220,8 @@ export default class FormDesign extends PureComponent {
 
         if (event.clientY > BoundingLastChild.bottom) {
           this.onChangeDropIndex(len - 1);
+        }else{
+          this.onChangeDropIndex(-1);
         }
       } else {
         this.onChangeDropIndex(-1);
@@ -242,12 +243,10 @@ export default class FormDesign extends PureComponent {
   generateField = () => {
     const { canvasItems, currentDropIndex } = this.state;
     return canvasItems.map((item, index) => {
-      if (item.type !== "grid") {
-      } else {
         return FieldCorAttr[item.type].showField({
           dataSet: { ...item },
           key: index,
-          index: index,
+          gridIndex: index,
           currentDropIndex,
           moveField: this.moveField,
           removeField: this.removeField,
@@ -257,27 +256,19 @@ export default class FormDesign extends PureComponent {
           onDrop: this.onDrop,
           onDragStart: this.onDragStart
         });
-      }
     });
   };
-  activeField = (item, index, row, col) => {
+  activeField = (item, gridIndex, cellIndex) => {
     if (item.type !== "grid") {
       this.setState(
         prevState => {
           let canvasItems = [...prevState.canvasItems];
           canvasItems.forEach(item => (item.active = false));
-          canvasItems[index].active = true;
-          canvasItems.forEach(item => {
-            item.attrInfo.layout.forEach(val => {
-              val.col.forEach(value => (value.active = false));
-            });
-          });
-          const layout = canvasItems[index].attrInfo.layout;
-          layout.forEach(val => {
-            val.col.forEach(value => (value.active = false));
-          });
-          layout[row]["col"][col].active = true;
-          let activeItem = layout[row]["col"][col].item;
+          canvasItems[gridIndex].active = true;
+          const cells = canvasItems[gridIndex].attrInfo.grid.cells;
+          cells.forEach(item => item.active = false)
+          cells[cellIndex].active = true;
+          let activeItem = cells[cellIndex].item;
           return { activeItem };
         },
         () => {
@@ -287,17 +278,16 @@ export default class FormDesign extends PureComponent {
     } else {
       this.setState(
         prevState => {
-          let canvasItems = prevState.canvasItems.slice();
-          canvasItems.forEach(item => (item.active = false));
+          let canvasItems = [...prevState.canvasItems];
           canvasItems.forEach(item => {
-            item.attrInfo.layout.forEach(val => {
-              val.col.forEach(value => (value.active = false));
-            });
+            item.active = false;
+            const cells = item.attrInfo.grid.cells;
+            cells.forEach(cell => cell.active = false);
           });
           canvasItems = [
-            ...canvasItems.slice(0, index),
+            ...canvasItems.slice(0, gridIndex),
             { ...item, active: true },
-            ...canvasItems.slice(index + 1)
+            ...canvasItems.slice(gridIndex + 1)
           ];
           const activeItem = canvasItems.find(item => item.active === true);
           return { canvasItems, activeItem };
@@ -308,19 +298,19 @@ export default class FormDesign extends PureComponent {
       );
     }
   };
-  removeField = (item, index, row, col) => {
+  removeField = (item, gridIndex, cellIndex ) => {
     if (item.type !== "grid") {
       this.setState(
         prevState => {
           const canvasItems = [...prevState.canvasItems];
-          canvasItems[index].attrInfo.layout[row]["col"][col].item = null;
+          canvasItems[gridIndex].attrInfo.grid.cells[cellIndex].item = null
           let activeItem;
           if (!item.active) {
             return {
               canvasItems
             };
           } else {
-            activeItem = canvasItems[index];
+            activeItem = canvasItems[gridIndex];
             return {
               canvasItems,
               activeItem
@@ -335,7 +325,7 @@ export default class FormDesign extends PureComponent {
       this.setState(
         prevState => {
           const canvasItems = [...prevState.canvasItems];
-          canvasItems.splice(index, 1);
+          canvasItems.splice(gridIndex, 1);
           let activeItem;
           if (!item.active) {
             return {
@@ -382,12 +372,12 @@ export default class FormDesign extends PureComponent {
       }
     );
   };
-  saveData = (item, index, row, col) => {
+  saveData = (item, gridIndex, cellIndex) => {
     if (item.type !== "grid") {
       this.setState(
         prevState => {
-          const canvasItems = prevState.canvasItems.slice();
-          canvasItems[index].attrInfo.layout[row]["col"][col].item = item;
+          const canvasItems = [...prevState.canvasItems];
+          canvasItems[gridIndex].attrInfo.grid.cells[cellIndex].item = item;
           const activeItem = item;
           return { canvasItems, activeItem };
         },
@@ -399,7 +389,7 @@ export default class FormDesign extends PureComponent {
       this.setState(
         prevState => {
           const canvasItems = [...prevState.canvasItems];
-          canvasItems[index] = item;
+          canvasItems[gridIndex] = item;
           const activeItem = item;
           return { canvasItems, activeItem };
         },

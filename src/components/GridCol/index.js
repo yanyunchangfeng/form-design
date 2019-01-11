@@ -1,7 +1,7 @@
 import React, { PureComponent } from "react";
 import FieldCorAttr from "../../utils/field-cor-attr.js";
 import emitter from "../../directive/dragdropdirective";
-import DeepClone from "../../utils/common";
+import Util from "../../utils/common";
 import { take } from "rxjs/operators";
 import PropTypes from "prop-types";
 const emitter$ = emitter;
@@ -9,15 +9,14 @@ const data$ = emitter$.getDragData().pipe(take(1));
 
 class GridCol extends PureComponent {
   state = {
-    dropTags: ["base"],
+    dropTags: ['base'],
     dragenter: false
   };
   onDragEnter = event => {
     const {
       dataSet: { active },
-      row,
-      col,
-      layout
+      cells,
+      cellIndex,
     } = this.props;
     const { dropTags } = this.state;
     event.preventDefault();
@@ -27,8 +26,8 @@ class GridCol extends PureComponent {
         if (!active) {
           return;
         }
-        if (!layout[row]["col"][col].item) {
-          this.setState({ dragenter: true });
+        if(!cells[cellIndex].item){
+          this.setState({dragenter: true })
         }
       }
     });
@@ -40,9 +39,8 @@ class GridCol extends PureComponent {
   onDragLeave = () => {
     const {
       dataSet: { active },
-      row,
-      col,
-      layout
+      cells,
+      cellIndex,
     } = this.props;
     const { dropTags } = this.state;
     data$.subscribe(dragData => {
@@ -50,7 +48,7 @@ class GridCol extends PureComponent {
         if (!active) {
           return;
         }
-        if (!layout[row]["col"][col].item) {
+        if(!cells[cellIndex].item){
           this.setState({ dragenter: false });
         }
       }
@@ -60,9 +58,8 @@ class GridCol extends PureComponent {
     const {
       dataSet: { active },
       onDropFormLayout,
-      row,
-      col,
-      layout
+      cellIndex,
+      cells,
     } = this.props;
     const { dropTags } = this.state;
     data$.subscribe(dragData => {
@@ -70,19 +67,17 @@ class GridCol extends PureComponent {
         if (!active) {
           return;
         }
-        if (!layout[row]["col"][col].item) {
+        if (!cells[cellIndex].item) {
           this.setState({ dragenter: false });
-          const baseInfo = DeepClone.deepClone({
+          const baseInfo = Util.deepClone({
             ...FieldCorAttr[dragData.data.type].initValues
           });
           const attrInfo = {
             titleValue: dragData.data.name,
             ...baseInfo,
-            row,
-            col
           };
-          const item = { ...dragData.data, attrInfo };
-          onDropFormLayout(item, row, col);
+          const item = { ...dragData.data, attrInfo ,cellIndex};
+          onDropFormLayout(item,cellIndex);
         }
       }
     });
@@ -97,7 +92,7 @@ class GridCol extends PureComponent {
         onDragLeave={this.onDragLeave}
         onDrop={this.onDrops}
         onDragOver={this.onDragOver}
-        style={{ height: "100%" ,display:'flex',flex:1}}
+        style={{ height: "100%" ,display:'flex',flex:1,minHeight:'50px'}}
       >
         {children}
       </div>

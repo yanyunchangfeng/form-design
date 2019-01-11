@@ -1,34 +1,39 @@
 import React, { PureComponent } from "react";
 import { Select, Button } from "antd";
+import Util from "../../utils/common";
+
 const Option = Select.Option;
 export default class FormLayoutAttr extends PureComponent {
   handleChange = ({ rowoptionvalue, coloptionvalue }) => {
     const { activeItem, onSave } = this.props;
-    const { index, attrInfo } = activeItem;
-    // const span = 1/ coloptionvalue;
-    const layout = this.initItems(rowoptionvalue, coloptionvalue);
+    const { gridIndex, attrInfo } = activeItem;
+    // const layout = this.initItems(rowoptionvalue, coloptionvalue);
     const updateAttrInfo = {
       ...attrInfo,
-      layout: layout,
-      // span: span,
-      rowoptionvalue: rowoptionvalue,
-      coloptionvalue: coloptionvalue
+      // layout: layout,
+      rowoptionvalue:rowoptionvalue,
+      coloptionvalue:coloptionvalue,
+      grid:{
+        row:rowoptionvalue,
+        col:coloptionvalue,
+        cells:Util.initArray(rowoptionvalue * coloptionvalue)
+      }
     };
     const updateActiveItem = { ...activeItem, attrInfo: updateAttrInfo };
-    onSave(updateActiveItem, index);
+    onSave(updateActiveItem, gridIndex);
   };
-  initItems(rowoptionvalue, coloptionvalue) {
-    let layout = [];
-    for (let i = 0; i < rowoptionvalue; i++) {
-      let obj = {};
-      obj["col"] = [];
-      for (let j = 0; j < coloptionvalue; j++) {
-        obj["col"].push({ active: false });
-      }
-      layout.push(obj);
-    }
-    return layout;
-  }
+  // initItems(rowoptionvalue, coloptionvalue) {
+  //   let layout = [];
+  //   for (let i = 0; i < rowoptionvalue; i++) {
+  //     let obj = {};
+  //     obj["col"] = [];
+  //     for (let j = 0; j < coloptionvalue; j++) {
+  //       obj["col"].push({ active: false });
+  //     }
+  //     layout.push(obj);
+  //   }
+  //   return layout;
+  // }
   render() {
     const {
       activeItem: {

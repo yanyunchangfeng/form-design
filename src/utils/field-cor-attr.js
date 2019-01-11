@@ -340,7 +340,8 @@ const FieldCorAttr = {
         {key:7,value:7},
         {key:8,value:8}
       ],
-      layout:[{col:[{active:false}]}]
+      layout:[{col:[{active:false}]}],
+      grid:{row:1,col:1,cells:[{active:false}]},
     },
     showField: rest => {
       return <FormLayout {...rest} />;

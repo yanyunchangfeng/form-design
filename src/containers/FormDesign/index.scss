@@ -120,6 +120,17 @@ $padding: 40px;
   .margin-bottom-rem{
     margin-bottom: 0;
   }
+  .grid{
+    border:1px solid red;
+    min-height: 50px;
+    height: auto;
+    .cell{
+      display: flex;
+      min-height: 50px;
+      height: auto;
+      // border-bottom: 1px dotted red;
+    }
+  }
 }
 .wf-right {
   flex: 0 0 auto;
@@ -706,6 +717,10 @@ options 样式
 .text-align-center {
   text-align: center;
 }
+/*
+   drag style 
+   create by hbxyxuxiaodong
+*/
 .drag-enter {
   background-color: dimgrey;
 }
@@ -719,7 +734,6 @@ options 样式
 .no-margin-bottom{
   margin-bottom: 0;
 }
-
 .ant-tabs-content {
   height: calc(100% - #{$padding});
   padding-top: 20px;
