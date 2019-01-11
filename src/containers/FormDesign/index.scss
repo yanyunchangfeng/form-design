@@ -121,14 +121,13 @@ $padding: 40px;
     margin-bottom: 0;
   }
   .grid{
-    border:1px solid red;
+    border:1px dotted red;
     min-height: 50px;
     height: auto;
     .cell{
       display: flex;
       min-height: 50px;
       height: auto;
-      // border-bottom: 1px dotted red;
     }
   }
 }
@@ -301,8 +300,16 @@ html:not(.wf-cursor-move) .wf-component.active {
   .wf-remove + .flex-row {
     border-top: 1px solid red;
   }
+  &.drag-start{
+    .grid{
+      border:0;
+    }
+  }
   & > :last-child {
-    border-bottom: 1px solid red;
+    // border-bottom: 1px solid red;
+  }
+  .grid{
+    border:1px solid red;
   }
   .flex-row{
     border-left: 1px solid red;

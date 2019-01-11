@@ -6,7 +6,7 @@ const Option = Select.Option;
 export default class FormLayoutAttr extends PureComponent {
   handleChange = ({ rowoptionvalue, coloptionvalue }) => {
     const { activeItem, onSave } = this.props;
-    const { gridIndex, attrInfo } = activeItem;
+    const { index, attrInfo } = activeItem;
     // const layout = this.initItems(rowoptionvalue, coloptionvalue);
     const updateAttrInfo = {
       ...attrInfo,
@@ -20,7 +20,7 @@ export default class FormLayoutAttr extends PureComponent {
       }
     };
     const updateActiveItem = { ...activeItem, attrInfo: updateAttrInfo };
-    onSave(updateActiveItem, gridIndex);
+    onSave(updateActiveItem, index);
   };
   // initItems(rowoptionvalue, coloptionvalue) {
   //   let layout = [];
