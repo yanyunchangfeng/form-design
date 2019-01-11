@@ -121,13 +121,16 @@ $padding: 40px;
     margin-bottom: 0;
   }
   .grid{
-    border: 1px dotted red;
+    border-left: 1px dotted red;
+    border-right: 1px dotted red;
+    border-bottom: 1px dotted red;
     min-height: 50px;
     height: auto;
     .cell{
       display: flex;
       min-height: 50px;
       height: auto;
+      border-top: 1px dotted red;
       >div{
         >div{
           width:100%;
@@ -308,7 +311,10 @@ html:not(.wf-cursor-move) .wf-component.active {
     }
   }
   .grid{
-    border:1px solid red;
+    border-top:1px solid red;
+    border-left: 1px solid red;
+    border-right: 1px solid red;
+    border-bottom: 1px solid red;
   }
   .flex-row{
     border-left: 1px solid red;

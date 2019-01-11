@@ -160,7 +160,7 @@ class FormLayout extends PureComponent {
                                     )
                                   : ""}
                 </GridCol>
-                {index?<div className="resizer"></div>:''}
+                {true?<div className="resizer"></div>:''}
                 </div>
               )
             })}
