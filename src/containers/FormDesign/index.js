@@ -112,11 +112,9 @@ export default class FormDesign extends PureComponent {
           ...layoutInitValue
         };
         const canvasItems = [...prevState.canvasItems];
-        canvasItems.forEach(item => (item.active = false));
         canvasItems.forEach(item => {
-          item.attrInfo.layout.forEach(val => {
-            val.col.forEach(value => (value.active = false));
-          });
+          item.active = false;
+          item.attrInfo.grid.cells.forEach(cell=>cell.active = false)
         });
         canvasItems.splice(this.state.currentDropIndex + 1, 0, {
           ...item,
@@ -145,6 +143,9 @@ export default class FormDesign extends PureComponent {
       }
     });
   };
+  onDropGridCell = () =>{
+
+  };
   componentWillReceiveProps(nextprops){
      if(nextprops.fieldsData!==this.props.fieldsData){
        const canvasItems = nextprops.fieldsData
@@ -157,7 +158,6 @@ export default class FormDesign extends PureComponent {
     this.setState(
       prevState => {
         let canvasItems = [...prevState.canvasItems];
-        console.log(canvasItems)
         const cells = canvasItems[gridIndex].attrInfo.grid.cells;
         cells.forEach(item => item.active = false);
         cells[cellIndex].active = true;
@@ -177,7 +177,7 @@ export default class FormDesign extends PureComponent {
     );
   }
   onDragStart = (event, data) => {
-    this.setState({ currentGhostImage: data });
+    // this.setState({ currentGhostImage: data });
     // event.dataTransfer.setDragImage(findDOMNode(this.ghostImage), 74, 16);
   };
   onDragEnd = () => {
@@ -226,6 +226,7 @@ export default class FormDesign extends PureComponent {
   };
   //鼠标离开容器事件
   containerDragleave = (event, comp) => {
+    console.log('dragleave');
     const hoverBoundingRect = findDOMNode(comp).getBoundingClientRect();
     if (
       event.clientY > hoverBoundingRect.bottom ||
@@ -260,7 +261,6 @@ export default class FormDesign extends PureComponent {
       this.setState(
         prevState => {
           let canvasItems = [...prevState.canvasItems];
-          // canvasItems.forEach(item => (item.active = false));
           canvasItems.forEach(item => {
             item.active = false;
             const cells = item.attrInfo.grid.cells;
@@ -352,17 +352,15 @@ export default class FormDesign extends PureComponent {
       prevState => {
         const canvasItems = [...prevState.canvasItems];
         canvasItems.splice(curIndex, 0, ...canvasItems.splice(dragIndex, 1));
-        canvasItems.forEach((item, index) => (item.index = index));
-        canvasItems.forEach(item => {
-          item.attrInfo.layout.forEach(val => {
-            val.col.forEach(value => (value.active = false));
-          });
-        });
         canvasItems.forEach((item, index) => {
-          item.attrInfo.layout.forEach(val => {
-            val.col.forEach(value => value.item && (value.item.index = index));
-          });
+          item.index = index;
+          const cells = item.attrInfo.grid.cells;
+          cells.forEach(cell => cell.active = false)
         });
+        canvasItems.forEach((item,index) => {
+          const cells = item.attrInfo.grid.cells;
+          cells.forEach(cell => cell.item && (cell.item.index = index))
+        })
         const activeItem = canvasItems.find(item => item.active === true);
         return {
           canvasItems,
