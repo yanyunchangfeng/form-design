@@ -125,6 +125,7 @@ export default class FormDesign extends PureComponent {
         canvasItems.forEach((item, index) => (item.index = index));
         return {
           activeItem,
+          currentDropIndex:-2,
           canvasItems
         };
       },
@@ -137,14 +138,18 @@ export default class FormDesign extends PureComponent {
   onDrop = (item, index, cellIndex) => {
     this.data$.subscribe(dragData => {
       if (this.state.dropTags.indexOf(dragData.tag) > -1) {
-        this.updateGridState(item);
+        if(item && (index===0||index )&& (cellIndex===0||index)){
+          this.updateBaseState(item,index,cellIndex);
+          // console.log('更新base')
+        }
+        if(index === undefined || cellIndex === undefined){
+          console.log('更新Grid')
+          this.updateGridState(item)
+        }
       } else {
         this.updateBaseState(item, index, cellIndex);
       }
     });
-  };
-  onDropGridCell = () =>{
-
   };
   componentWillReceiveProps(nextprops){
      if(nextprops.fieldsData!==this.props.fieldsData){
@@ -226,16 +231,17 @@ export default class FormDesign extends PureComponent {
   };
   //鼠标离开容器事件
   containerDragleave = (event, comp) => {
-    console.log('dragleave');
-    const hoverBoundingRect = findDOMNode(comp).getBoundingClientRect();
-    if (
-      event.clientY > hoverBoundingRect.bottom ||
-      event.clientY < hoverBoundingRect.top ||
-      event.clientX < hoverBoundingRect.left ||
-      event.clientX > hoverBoundingRect.right
-    ) {
-      this.onChangeDropIndex(-2);
-    }
+    this.onChangeDropIndex(-2);
+    console.log('container dragleave');
+    // const hoverBoundingRect = findDOMNode(comp).getBoundingClientRect();
+    // if (
+    //   event.clientY > hoverBoundingRect.bottom ||
+    //   event.clientY < hoverBoundingRect.top ||
+    //   event.clientX < hoverBoundingRect.left ||
+    //   event.clientX > hoverBoundingRect.right
+    // ) {
+    //   this.onChangeDropIndex(-2);
+    // }
   };
   generateField = () => {
     const { canvasItems, currentDropIndex } = this.state;

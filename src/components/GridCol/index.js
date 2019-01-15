@@ -9,7 +9,7 @@ const data$ = emitter$.getDragData().pipe(take(1));
 
 class GridCol extends PureComponent {
   state = {
-    dropTags: ['base'],
+    dropTags: ['base','grid'],
     dragenter: false
   };
   onDragEnter = event => {
