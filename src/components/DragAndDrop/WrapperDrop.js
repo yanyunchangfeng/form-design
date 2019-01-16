@@ -71,7 +71,6 @@ export default function WrapperDrop(Component) {
     };
     render() {
       const { currentDropIndex, dataSet, index } = this.props;
-      console.log(currentDropIndex,index)
       return (
         <Fragment>
           <div
@@ -84,7 +83,7 @@ export default function WrapperDrop(Component) {
             style={dataSet ? {} : { height: "100%" }}
           >
             <Component {...this.props} {...this.state} />
-            {dataSet && dataSet.type === 'grid' && currentDropIndex === index ? (
+            {currentDropIndex === index ? (
               <div className="wf-dragging-mark" />
             ) : (
               ""

@@ -131,6 +131,9 @@ $padding: 40px;
       min-height: 50px;
       height: auto;
       border-top: 1px dotted red;
+      .wf-dragging-mark{
+        display: none;
+      }
       >div{
         >div{
           width:100%;
@@ -310,7 +313,7 @@ html:not(.wf-cursor-move) .wf-component.active {
       border:0;
     }
   }
-  .grid{
+  > .grid{
     border-top:1px solid red;
     border-left: 1px solid red;
     border-right: 1px solid red;

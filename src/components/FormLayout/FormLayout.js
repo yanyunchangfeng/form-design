@@ -99,7 +99,7 @@ class FormLayout extends PureComponent {
     const { dragStart } = this.state;
     const {
       active,
-      attrInfo: { layout ,grid:{row,col,cells}}
+      attrInfo: { grid:{row,col,cells}}
     } = dataSet;
     const GridStyle = {
       display:'grid',

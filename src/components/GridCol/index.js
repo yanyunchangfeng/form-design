@@ -54,13 +54,15 @@ class GridCol extends PureComponent {
       }
     });
   };
-  onDrops = () => {
+  onDrops = (event) => {
     const {
       dataSet: { active },
       onDropFormLayout,
       cellIndex,
       cells,
     } = this.props;
+    event.stopPropagation();
+    event.preventDefault();
     const { dropTags } = this.state;
     data$.subscribe(dragData => {
       if (dropTags.indexOf(dragData.tag) > -1) {
@@ -90,7 +92,7 @@ class GridCol extends PureComponent {
         className={`${dragenter ? "drag-enter" : ""}`}
         onDragEnter={this.onDragEnter}
         onDragLeave={this.onDragLeave}
-        onDrop={this.onDrops}
+        onDrop={event => this.onDrops(event)}
         onDragOver={this.onDragOver}
         style={{ height: "100%" ,display:'flex',flex:1,minHeight:'50px'}}
       >

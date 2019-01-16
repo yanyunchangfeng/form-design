@@ -9,7 +9,6 @@ export default class DropDownFieldAttr extends PureComponent {
      attrInfo,
      cellIndex
     } = activeItem;
-    const {row,col} = attrInfo;
     const updateAttrInfo = {
       ...attrInfo,
       ...item

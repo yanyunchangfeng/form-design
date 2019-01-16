@@ -12,6 +12,8 @@ import LayoutFields from "../../components/LayoutFields";
 import FieldCorAttr from "../../utils/field-cor-attr.js";
 import Util from "../../utils/common.js";
 import emitter from "../../directive/dragdropdirective";
+const emitter$ = emitter;
+const data$ = emitter$.getDragData().pipe(take(1));
 const Panel = Collapse.Panel;
 const layoutItems = [
   {
@@ -91,7 +93,6 @@ export default class FormDesign extends PureComponent {
       canvasItems,
       activeItem: null,
       currentDropIndex: -2,
-      currentGhostImage: {},
       dropTags: ["grid"]
     };
   }
@@ -104,25 +105,32 @@ export default class FormDesign extends PureComponent {
   updateGridState = item => {
     this.setState(
       prevState => {
-        const layoutInitValue = Util.deepClone({
-          ...FieldCorAttr[item.type].initValues
-        });
-        const attrInfo = {
-          titleValue: item.name,
-          ...layoutInitValue
-        };
         const canvasItems = [...prevState.canvasItems];
-        canvasItems.forEach(item => {
-          item.active = false;
-          item.attrInfo.grid.cells.forEach(cell=>cell.active = false)
-        });
-        canvasItems.splice(this.state.currentDropIndex + 1, 0, {
-          ...item,
-          attrInfo,
-          active: true
-        });
-        const activeItem = canvasItems.find(item => item.active === true);
-        canvasItems.forEach((item, index) => (item.index = index));
+        Util.resetArrayActive(canvasItems);
+        Util.addCanvasItem(canvasItems,this.state.currentDropIndex+1,item);
+        const activeItem = Util.getActiveItem(canvasItems);
+        Util.addArrayIndex(canvasItems)
+        return {
+          activeItem,
+          currentDropIndex:-2,
+          canvasItems
+        };
+      },
+      () => {
+        this.saveToOuter(this.state.canvasItems);
+        //用该函数来监听渲染是否完成
+      }
+    );
+  };
+  updateGridIndexGridState = (item ,gridIndex,cellIndex)=> {
+    this.setState(
+      prevState => {
+        const canvasItems = [...prevState.canvasItems];
+        Util.resetArrayActive(canvasItems);
+        Util.activeIndex(canvasItems,gridIndex);
+        Util.addCellItem(canvasItems,gridIndex,cellIndex,item);
+        Util.activeIndex(canvasItems[gridIndex].attrInfo.grid.cells,cellIndex)
+        const activeItem = Util.getCellActiveItem(canvasItems,gridIndex,cellIndex) ;
         return {
           activeItem,
           currentDropIndex:-2,
@@ -136,16 +144,13 @@ export default class FormDesign extends PureComponent {
     );
   };
   onDrop = (item, index, cellIndex) => {
-    this.data$.subscribe(dragData => {
+    data$.subscribe(dragData => {
       if (this.state.dropTags.indexOf(dragData.tag) > -1) {
-        if(item && (index===0||index )&& (cellIndex===0||index)){
-          this.updateBaseState(item,index,cellIndex);
-          // console.log('更新base')
-        }
-        if(index === undefined || cellIndex === undefined){
-          console.log('更新Grid')
+        if(index===undefined&&cellIndex===undefined){
           this.updateGridState(item)
-        }
+        }else{
+          this.updateGridIndexGridState(item,index,cellIndex)
+        }  
       } else {
         this.updateBaseState(item, index, cellIndex);
       }
@@ -181,16 +186,16 @@ export default class FormDesign extends PureComponent {
       }
     );
   }
-  onDragStart = (event, data) => {
+  // onDragStart = (event, data) => {
     // this.setState({ currentGhostImage: data });
     // event.dataTransfer.setDragImage(findDOMNode(this.ghostImage), 74, 16);
-  };
+  // };
   onDragEnd = () => {
     this.setState({ currentDropIndex: -2 });
   };
   //文本块dragover事件
   FieldDragOver = (event, dataSet, comp) => {
-    this.data$.subscribe(dragData => {
+    data$.subscribe(dragData => {
       if (this.state.dropTags.indexOf(dragData.tag) > -1) {
         this.moveLayout(event, dataSet, comp);
       }
@@ -232,7 +237,7 @@ export default class FormDesign extends PureComponent {
   //鼠标离开容器事件
   containerDragleave = (event, comp) => {
     this.onChangeDropIndex(-2);
-    console.log('container dragleave');
+    // console.log('container dragleave');
     // const hoverBoundingRect = findDOMNode(comp).getBoundingClientRect();
     // if (
     //   event.clientY > hoverBoundingRect.bottom ||
@@ -256,9 +261,9 @@ export default class FormDesign extends PureComponent {
           removeField: this.removeField,
           activeField: this.activeField,
           onDragOver: this.FieldDragOver,
-          onDragEnd: this.onDragEnd,
+          // onDragEnd: this.onDragEnd,
           onDrop: this.onDrop,
-          onDragStart: this.onDragStart
+          // onDragStart: this.onDragStart
         });
     });
   };
@@ -370,6 +375,7 @@ export default class FormDesign extends PureComponent {
         const activeItem = canvasItems.find(item => item.active === true);
         return {
           canvasItems,
+          currentDropIndex:-2,
           activeItem
         };
       },
@@ -410,16 +416,17 @@ export default class FormDesign extends PureComponent {
     this.props.onSave(fieldsData);
   };
   render() {
-    const { activeItem, currentGhostImage, currentDropIndex } = this.state;
-    this.emitter = emitter;
-    this.data$ = emitter.getDragData().pipe(take(1));
-    const { className, height } = this.props;
-    let fd = "fd-content";
-    if (className) {
-      fd = fd + className;
-    }
+    const { activeItem, currentDropIndex } = this.state;
+    // console.log(currentDropIndex)
+    // this.emitter = emitter;
+    // this.data$ = emitter.getDragData().pipe(take(1));
+    // const { className, height } = this.props;
+    // let fd = "fd-content";
+    // if (className) {
+    //   fd = fd + className;
+    // }
     return (
-      <div className={fd} style={height ? { height: height } : {}}>
+      <div className="fd-content">
         <div className="wf-panel wf-widgetspanel ">
           <Collapse defaultactiveId={["1", "2"]}>
             <Panel header="布局组件" key="1">
@@ -469,20 +476,20 @@ export default class FormDesign extends PureComponent {
               })
             : ""}
         </div>
-        <div
-          className="wf-widgetsitem"
-          style={{ zIndex: "-1", position: "absolute" }}
-          ref={ghostImage => {
-            this.ghostImage = ghostImage;
-          }}
-        >
-          <label>{currentGhostImage.name}</label>
-          <img className="widgeticon" src={currentGhostImage.url} alt="图片" />
-        </div>
       </div>
     );
   }
 }
+// <div
+//           className="wf-widgetsitem"
+//           style={{ zIndex: "-1", position: "absolute" }}
+//           ref={ghostImage => {
+//             this.ghostImage = ghostImage;
+//           }}
+//         >
+//           <label>{currentGhostImage.name}</label>
+//           <img className="widgeticon" src={currentGhostImage.url} alt="图片" />
+//         </div>
 FormDesign.propTypes = {
   className: PropTypes.string,
   height: PropTypes.string,

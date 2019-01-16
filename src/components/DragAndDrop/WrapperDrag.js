@@ -11,26 +11,26 @@ export default function WrapperDrag(Component, dragTag) {
       this.emitter = emitter;
     }
     onDragStart = event=> {
-      const { dataSet, onDragStart } = this.props;
+      const { dataSet} = this.props;
       this.emitter.setDragData({ tag: dragTag, type: "new", data: dataSet });
       // event.dataTransfer.setData('text','123')
       this.setState({ dragStart: true });
-      if(!onDragStart){
-        return 
-      }
-      onDragStart( event, dataSet);
+      // if(!onDragStart){
+      //   return 
+      // }
+      // onDragStart( event, dataSet);
     };
     onDragEnd = () => {
       this.setState({ dragStart: false });
-      const{onDragEnd} = this.props;
-      if(!onDragEnd){
-        return 
-      }
-      onDragEnd()
+      // const{onDragEnd} = this.props;
+      // if(!onDragEnd){
+      //   return 
+      // }
+      // onDragEnd()
     };
     render() {
       const { draggable, dragStart } = this.state;
-      const {className} =  this.props
+      const { className } =  this.props
       return (
         <div
           className={ `clearfix margin-bottom-rem ${className?'no-margin-bottom':''}` }
