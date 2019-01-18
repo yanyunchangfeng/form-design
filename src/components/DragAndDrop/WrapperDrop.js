@@ -71,6 +71,9 @@ export default function WrapperDrop(Component) {
     };
     render() {
       const { currentDropIndex, dataSet, index } = this.props;
+      // const { gridIndex } = dataSet
+      // console.log(gridIndex)
+      // console.log(this.props)
       return (
         <Fragment>
           <div

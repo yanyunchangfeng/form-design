@@ -38,7 +38,7 @@ class FormLayout extends PureComponent {
     if (!onDrop) {
       return;
     }
-    onDrop(item, gridIndex);
+    onDrop(item);
   };
   generateField = (data, active, type) => {
     return FieldCorAttr[type].showField({
@@ -52,12 +52,12 @@ class FormLayout extends PureComponent {
     removeField(item, gridIndex, cellIndex);
   };
   activeFields = (item) => {
-    const { gridIndex, activeField } = this.props;
+    const { activeField } = this.props;
     const active  = item.active;
     if (active) {
       return;
     }
-    activeField(item, gridIndex );
+    activeField(item);
   };
   // {layout.map((val, index) => {
   //   return (
@@ -97,7 +97,7 @@ class FormLayout extends PureComponent {
   // })}
   render() {
     const { dataSet, isDragging, activeField, removeField, gridIndex } = this.props;
-    console.log(this.props)
+    // console.log(this.props)
     const { dragStart } = this.state;
     const {
       active,
@@ -131,7 +131,7 @@ class FormLayout extends PureComponent {
         draggable
         onMouseDown={ event => {
           event.stopPropagation();
-          activeField(dataSet, gridIndex);
+          activeField(dataSet);
         }}
         onDragStart={event => this.onDragStart(event, dataSet, gridIndex)}
         onDragEnd = {event => this.onDragEnd()}

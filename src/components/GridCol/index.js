@@ -14,10 +14,11 @@ class GridCol extends PureComponent {
   };
   onDragEnter = event => {
     const {
-      dataSet: { active },
+      dataSet: { active},
       cells,
       cellIndex,
     } = this.props;
+    // console.log(this.props)
     const { dropTags } = this.state;
     event.preventDefault();
     event.stopPropagation();
@@ -56,7 +57,7 @@ class GridCol extends PureComponent {
   };
   onDrops = (event) => {
     const {
-      dataSet: { active },
+      dataSet: { active ,gridIndex},
       onDropFormLayout,
       cellIndex,
       cells,
@@ -70,9 +71,6 @@ class GridCol extends PureComponent {
         if (!active) {
           return;
         }
-        // switch(tag){
-        //   case 'base'
-        // }
         if (!cells[cellIndex].item) {
           this.setState({ dragenter: false });
           const baseInfo = Util.deepClone({
@@ -83,7 +81,7 @@ class GridCol extends PureComponent {
             ...baseInfo,
             
           };
-          const item = { ...dragData.data, attrInfo,cellIndex };
+          const item = { ...dragData.data, attrInfo,gridIndex,cellIndex };
           onDropFormLayout(item);
         }
       }
