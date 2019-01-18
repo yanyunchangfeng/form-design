@@ -12,6 +12,7 @@ import LayoutFields from "../../components/LayoutFields";
 import FieldCorAttr from "../../utils/field-cor-attr.js";
 import Util from "../../utils/common.js";
 import emitter from "../../directive/dragdropdirective";
+import { constants } from "zlib";
 const emitter$ = emitter;
 const data$ = emitter$.getDragData().pipe(take(1));
 const Panel = Collapse.Panel;
@@ -122,15 +123,16 @@ export default class FormDesign extends PureComponent {
       }
     );
   };
-  updateGridIndexGridState = (item ,gridIndex,cellIndex)=> {
+  updateGridIndexGridState = (item ,gridIndex)=> {
     this.setState(
       prevState => {
         const canvasItems = [...prevState.canvasItems];
         Util.resetArrayActive(canvasItems);
         Util.activeIndex(canvasItems,gridIndex);
-        Util.addCellItem(canvasItems,gridIndex,cellIndex,item);
-        Util.activeIndex(canvasItems[gridIndex].attrInfo.grid.cells,cellIndex)
-        const activeItem = Util.getCellActiveItem(canvasItems,gridIndex,cellIndex) ;
+        Util.addCellItem(canvasItems,gridIndex,item.cellIndex,item);
+        Util.activeIndex(canvasItems[gridIndex].attrInfo.grid.cells,item.cellIndex)
+        const activeItem = Util.getCellActiveItem(canvasItems,gridIndex,item.cellIndex) ;
+        Util.addCellItemGridIndex(activeItem,gridIndex);
         return {
           activeItem,
           currentDropIndex:-2,
@@ -164,16 +166,22 @@ export default class FormDesign extends PureComponent {
        })
      }
   }
-  updateBaseState(item, gridIndex, cellIndex) {
+  updateBaseState(item, gridIndex) {
     this.setState(
       prevState => {
         let canvasItems = [...prevState.canvasItems];
-        const cells = canvasItems[gridIndex].attrInfo.grid.cells;
-        cells.forEach(item => item.active = false);
-        cells[cellIndex].active = true;
-        cells[cellIndex].item = item;
-        let activeItem = cells[cellIndex].item;
-        activeItem.index = gridIndex;
+        const cellIndex = item.cellIndex;
+        Util.resetCellActive(canvasItems,gridIndex,cellIndex);
+        Util.addCellItem(canvasItems,gridIndex,cellIndex,item);
+        // const cells = canvasItems[gridIndex].attrInfo.grid.cells;
+        // cells.forEach(item => item.active = false);
+        // cells[cellIndex].active = true;
+        // cells[cellIndex].item = item;
+        // let activeItem = cells[cellIndex].item;
+        Util.activeIndex(canvasItems[gridIndex].attrInfo.grid.cells,cellIndex)
+        const activeItem = Util.getCellActiveItem(canvasItems,gridIndex,cellIndex)
+        // activeItem.index = gridIndex;
+        Util.addCellItemGridIndex(activeItem,gridIndex);
         return {
           currentDropIndex: -2,
           activeItem,
@@ -267,21 +275,16 @@ export default class FormDesign extends PureComponent {
         });
     });
   };
-  activeField = (item, gridIndex, cellIndex) => {
+  activeField = (item, gridIndex) => {
     if (item.type !== "grid") {
       this.setState(
         prevState => {
           let canvasItems = [...prevState.canvasItems];
-          canvasItems.forEach(item => {
-            item.active = false;
-            const cells = item.attrInfo.grid.cells;
-            cells.forEach(cell => cell.active = false);
-          });
-          canvasItems[gridIndex].active = true;
-          const cells = canvasItems[gridIndex].attrInfo.grid.cells;
-          cells.forEach(item => item.active = false)
-          cells[cellIndex].active = true;
-          let activeItem = cells[cellIndex].item;
+          Util.resetArrayActive(canvasItems);
+          const cellIndex = item.cellIndex;
+          Util.activeIndex(canvasItems,gridIndex)
+          Util.activeIndex(canvasItems[gridIndex].attrInfo.grid.cells,cellIndex)
+          const activeItem = Util.getCellActiveItem(canvasItems,gridIndex,cellIndex);
           return { activeItem };
         },
         () => {
@@ -292,18 +295,33 @@ export default class FormDesign extends PureComponent {
       this.setState(
         prevState => {
           let canvasItems = [...prevState.canvasItems];
-          canvasItems.forEach(item => {
-            item.active = false;
-            const cells = item.attrInfo.grid.cells;
-            cells.forEach(cell => cell.active = false);
-          });
-          canvasItems = [
-            ...canvasItems.slice(0, gridIndex),
-            { ...item, active: true },
-            ...canvasItems.slice(gridIndex + 1)
-          ];
-          const activeItem = canvasItems.find(item => item.active === true);
-          return { canvasItems, activeItem };
+          Util.resetArrayActive(canvasItems);
+          const cellIndex = item.cellIndex;
+          let activeItem;
+          if(cellIndex!==undefined){
+            Util.activeIndex(canvasItems,gridIndex);
+            Util.activeIndex(canvasItems[gridIndex].attrInfo.grid.cells,cellIndex)
+            activeItem = Util.getCellActiveItem(canvasItems,gridIndex,cellIndex);
+            return { canvasItems, activeItem }
+          }
+          const index = item.index;
+          Util.activeIndex(canvasItems,index);
+          activeItem = Util.getActiveItem(canvasItems);
+          return {canvasItems, activeItem}
+          // canvasItems.forEach(item => {
+          //   item.active = false;
+          //   const cells = item.attrInfo.grid.cells;
+          //   cells.forEach(cell => cell.active = false);
+          // });
+          // canvasItems = [
+          //   ...canvasItems.slice(0, gridIndex),
+          //   { ...item, active: true },
+          //   ...canvasItems.slice(gridIndex + 1)
+          // ];
+          
+          // const activeItem = Util.getCellActiveItem(canvasItems,gridIndex,cellIndex) ;
+          // const activeItem = canvasItems.find(item => item.active === true);
+          
         },
         () => {
           this.saveToOuter(this.state.canvasItems);
@@ -384,12 +402,14 @@ export default class FormDesign extends PureComponent {
       }
     );
   };
-  saveData = (item, gridIndex, cellIndex) => {
+  saveData = (item, gridIndex) => {
     if (item.type !== "grid") {
       this.setState(
         prevState => {
           const canvasItems = [...prevState.canvasItems];
-          canvasItems[gridIndex].attrInfo.grid.cells[cellIndex].item = item;
+          const cellIndex = item.cellIndex;
+          Util.updateCurrentCellItem(canvasItems,gridIndex,cellIndex,item);
+          // canvasItems[gridIndex].attrInfo.grid.cells[cellIndex].item = item;
           const activeItem = item;
           return { canvasItems, activeItem };
         },
@@ -401,9 +421,21 @@ export default class FormDesign extends PureComponent {
       this.setState(
         prevState => {
           const canvasItems = [...prevState.canvasItems];
-          canvasItems[gridIndex] = item;
-          const activeItem = item;
-          return { canvasItems, activeItem };
+          const cellIndex = item.cellIndex;
+          let activeItem;
+          if(cellIndex!==undefined){
+            Util.updateCurrentCellItem(canvasItems,gridIndex,cellIndex,item);
+            activeItem = Util.getCellActiveItem(canvasItems,gridIndex,cellIndex);
+            return { canvasItems,activeItem}
+          }
+          const index = item.index;
+          Util.updateCurrentCanvasItem(canvasItems,gridIndex,item)
+          // Util.activeIndex(canvasItems,index);
+          activeItem = Util.getActiveItem(canvasItems);
+          return {canvasItems,activeItem}
+          // canvasItems[gridIndex] = item;
+          // const activeItem = item;
+          // return { canvasItems, activeItem };
         },
         () => {
           this.saveToOuter(this.state.canvasItems);

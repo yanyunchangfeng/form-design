@@ -29,7 +29,7 @@ class FormLayout extends PureComponent {
       dragStart:false
     })
   }
-  onDropFormLayout = (item, cellIndex) => {
+  onDropFormLayout = (item) => {
     const { dataSet, onDrop, gridIndex } = this.props;
     const { active } = dataSet;
     if (!active) {
@@ -38,7 +38,7 @@ class FormLayout extends PureComponent {
     if (!onDrop) {
       return;
     }
-    onDrop(item, gridIndex, cellIndex);
+    onDrop(item, gridIndex);
   };
   generateField = (data, active, type) => {
     return FieldCorAttr[type].showField({
@@ -51,12 +51,13 @@ class FormLayout extends PureComponent {
     const { gridIndex, removeField } = this.props;
     removeField(item, gridIndex, cellIndex);
   };
-  activeFields = (item, active, cellIndex) => {
+  activeFields = (item) => {
     const { gridIndex, activeField } = this.props;
+    const active  = item.active;
     if (active) {
       return;
     }
-    activeField(item, gridIndex, cellIndex);
+    activeField(item, gridIndex );
   };
   // {layout.map((val, index) => {
   //   return (
@@ -96,10 +97,11 @@ class FormLayout extends PureComponent {
   // })}
   render() {
     const { dataSet, isDragging, activeField, removeField, gridIndex } = this.props;
+    console.log(this.props)
     const { dragStart } = this.state;
     const {
       active,
-      attrInfo: { grid:{row,col,cells}}
+      attrInfo: { grid:{row,col,cells}},
     } = dataSet;
     const GridStyle = {
       display:'grid',
@@ -127,7 +129,8 @@ class FormLayout extends PureComponent {
       <div
         className={`wf-component wf-component-textfield ${status} ${dragStart? 'drag-start':''}`}
         draggable
-        onMouseDown={() => {
+        onMouseDown={ event => {
+          event.stopPropagation();
           activeField(dataSet, gridIndex);
         }}
         onDragStart={event => this.onDragStart(event, dataSet, gridIndex)}
@@ -145,8 +148,8 @@ class FormLayout extends PureComponent {
               return (
                 <div className="cell" key={index}>
                 <GridCol
-                                onDropFormLayout={(item,cellIndex) =>
-                                  this.onDropFormLayout(item,cellIndex)
+                                onDropFormLayout={(item) =>
+                                  this.onDropFormLayout(item)
                                 }
                                 cells={cells}
                                 cellIndex={index}

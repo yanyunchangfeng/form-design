@@ -349,26 +349,26 @@ const FieldCorAttr = {
       return <FormLayoutAttr {...rest} />;
     },
     getReallyField: (row, col) => {
-      let layout = [];
-      const span = 24 / col;
-      for (let i = 0; i < row; i++) {
-        let obj = {};
-        obj["col"] = [];
-        for (let j = 0; j < col; j++) {
-          obj["col"].push(j);
-        }
-        layout.push(obj);
-      }
+      // let layout = [];
+      // const span = 24 / col;
+      // for (let i = 0; i < row; i++) {
+      //   let obj = {};
+      //   obj["col"] = [];
+      //   for (let j = 0; j < col; j++) {
+      //     obj["col"].push(j);
+      //   }
+      //   layout.push(obj);
+      // }
 
-      return layout.map((val, index) => {
-        return (
-          <Row key={index}>
-            {val.col.map((value, idx) => {
-              return <Col key={idx} span={span} />;
-            })}
-          </Row>
-        );
-      });
+      // return layout.map((val, index) => {
+      //   return (
+      //     <Row key={index}>
+      //       {val.col.map((value, idx) => {
+      //         return <Col key={idx} span={span} />;
+      //       })}
+      //     </Row>
+      //   );
+      // });
     }
   }
 };

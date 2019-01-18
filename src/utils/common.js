@@ -17,6 +17,11 @@ const resetArrayActive = (arr) => {
       }
    )
 }
+const resetCellActive = (arr,gridIndex,cellIndex) => {
+   const cells = arr[gridIndex].attrInfo.grid.cells;
+   cells.forEach(item => item.active = false);
+   cells[cellIndex].active = true;
+}
 const addArrayIndex = (arr) => {
    arr.forEach((item,index) => item.index = index);
 }
@@ -45,6 +50,15 @@ const addCellItem = (arr,gridIndex,cellIndex,cellItem)=>{
 const addCanvasItem = (arr,index,item) => {
    arr.splice(index, 0, initLayoutValue(item));
 }
+const updateCurrentCanvasItem = (arr,gridIndex,item) => {
+   arr[gridIndex] = item;
+}
+const updateCurrentCellItem = (arr,gridIndex,cellIndex,item) => {
+   arr[gridIndex].attrInfo.grid.cells[cellIndex].item = item;
+}
+const addCellItemGridIndex = (arr,index) =>{
+   arr.index = index;
+}
 export default {
   deepClone,
   initArray,
@@ -53,7 +67,11 @@ export default {
   addCellItem,
   getActiveItem,
   addCanvasItem,
+  resetCellActive,
   getCellActiveItem,
   resetArrayActive,
+  updateCurrentCanvasItem,
+  updateCurrentCellItem,
+  addCellItemGridIndex,
   initLayoutValue
 }

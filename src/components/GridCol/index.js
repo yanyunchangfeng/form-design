@@ -65,10 +65,14 @@ class GridCol extends PureComponent {
     event.preventDefault();
     const { dropTags } = this.state;
     data$.subscribe(dragData => {
-      if (dropTags.indexOf(dragData.tag) > -1) {
+      const tag = dragData.tag;
+      if (dropTags.indexOf(tag) > -1) {
         if (!active) {
           return;
         }
+        // switch(tag){
+        //   case 'base'
+        // }
         if (!cells[cellIndex].item) {
           this.setState({ dragenter: false });
           const baseInfo = Util.deepClone({
@@ -77,9 +81,10 @@ class GridCol extends PureComponent {
           const attrInfo = {
             titleValue: dragData.data.name,
             ...baseInfo,
+            
           };
-          const item = { ...dragData.data, attrInfo ,cellIndex};
-          onDropFormLayout(item,cellIndex);
+          const item = { ...dragData.data, attrInfo,cellIndex };
+          onDropFormLayout(item);
         }
       }
     });
