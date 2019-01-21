@@ -96,7 +96,7 @@ const resetArrayCellActive = arr => {
 const resetArrayCellGridIndex = arr =>{
   arr.forEach((item, index)=>{
        const cells = item.attrInfo.grid.cells;
-       cells.forEach(subItem => subItem.gridIndex = index)
+       cells.forEach(subItem => (subItem.item)&&(subItem.gridIndex = index))
   })
 }
 const resetCellActive = (arr, gridIndex, cellIndex) => {

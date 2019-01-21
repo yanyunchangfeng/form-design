@@ -298,7 +298,20 @@ export default class FormDesign extends PureComponent {
             }
           }
           canvasItems.splice(gridIndex, 1);
-          return {canvasItems}
+          if(!active){
+            return {
+              canvasItems
+            }
+          }else{
+            activeItem = null;
+            return {
+              canvasItems,
+              activeItem
+            }
+          }
+         
+          // activeItem = null;
+          // return {canvasItems,activeItem}
           // let activeItem;
           // if (!item.active) {
           //   return {
@@ -336,6 +349,7 @@ export default class FormDesign extends PureComponent {
         //   cells.forEach(cell => cell.item && (cell.item.index = index))
         // })
         const activeItem = Util.getActiveItem(canvasItems);
+        console.log(canvasItems)
         // const activeItem = canvasItems.find(item => item.active === true);
         return {
           canvasItems,
