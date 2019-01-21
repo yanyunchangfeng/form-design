@@ -83,9 +83,22 @@ const resetArrayActive = arr => {
   arr.forEach(item => {
     item.active = false;
     const cells = item.attrInfo.grid.cells;
-    cells.forEach(subItem => (subItem.active = false));
+    cells.forEach(subItem => subItem.active = false);
   });
 };
+//for move
+const resetArrayCellActive = arr => {
+  arr.forEach(item => {
+    const cells = item.attrInfo.grid.cells;
+    cells.forEach(subItem => subItem.active = false);
+  })
+}
+const resetArrayCellGridIndex = arr =>{
+  arr.forEach((item, index)=>{
+       const cells = item.attrInfo.grid.cells;
+       cells.forEach(subItem => subItem.gridIndex = index)
+  })
+}
 const resetCellActive = (arr, gridIndex, cellIndex) => {
   const cells = arr[gridIndex].attrInfo.grid.cells;
   cells.forEach(item => (item.active = false));
@@ -144,6 +157,8 @@ export default {
   updateCurrentCanvasItem,
   updateCurrentCellItem,
   addCellItemGridIndex,
+  resetArrayCellGridIndex,
+  resetArrayCellActive,
   initLayoutValue,
   layoutItems,
   baseItems

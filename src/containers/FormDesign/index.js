@@ -138,7 +138,7 @@ export default class FormDesign extends PureComponent {
       const hoverMiddleY =
         (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
       const hoverClientY = event.clientY - hoverBoundingRect.top;
-      const index = dataSet.index;
+      const index = dataSet.gridIndex;
       if (hoverClientY <= hoverMiddleY) {
         this.onChangeDropIndex(index - 1);
       } else {
@@ -278,16 +278,36 @@ export default class FormDesign extends PureComponent {
       this.setState(
         prevState => {
           const canvasItems = [...prevState.canvasItems];
-          canvasItems.splice(gridIndex, 1);
+          const gridIndex = item.gridIndex;
+          const cellIndex = item.cellIndex;
+          const active = item.active;
           let activeItem;
-          if (!item.active) {
-            return {
-              canvasItems
-            };
-          } else {
-            activeItem = null;
-            return { canvasItems, activeItem };
+          if(cellIndex!==undefined){
+            if(!active){
+              Util.updateCurrentCellItem(canvasItems,gridIndex,cellIndex,null);
+              return {
+                canvasItems
+              }
+            }else{
+              Util.updateCurrentCellItem(canvasItems,gridIndex,cellIndex,null);
+              activeItem = Util.getActiveItem(canvasItems)
+              return {
+                canvasItems,
+                activeItem
+              }
+            }
           }
+          canvasItems.splice(gridIndex, 1);
+          return {canvasItems}
+          // let activeItem;
+          // if (!item.active) {
+          //   return {
+          //     canvasItems
+          //   };
+          // } else {
+          //   activeItem = null;
+          //   return { canvasItems, activeItem };
+          // }
         },
         () => {
           this.saveToOuter(this.state.canvasItems);
@@ -303,16 +323,20 @@ export default class FormDesign extends PureComponent {
       prevState => {
         const canvasItems = [...prevState.canvasItems];
         canvasItems.splice(curIndex, 0, ...canvasItems.splice(dragIndex, 1));
-        canvasItems.forEach((item, index) => {
-          item.index = index;
-          const cells = item.attrInfo.grid.cells;
-          cells.forEach(cell => cell.active = false)
-        });
-        canvasItems.forEach((item,index) => {
-          const cells = item.attrInfo.grid.cells;
-          cells.forEach(cell => cell.item && (cell.item.index = index))
-        })
-        const activeItem = canvasItems.find(item => item.active === true);
+        // canvasItems.forEach((item, index) => {
+        //   item.gridIndex = index;
+        //   const cells = item.attrInfo.grid.cells;
+        //   cells.forEach(cell => cell.active = false)
+        // });
+        Util.resetArrayCellActive(canvasItems);
+        Util.addArrayIndex(canvasItems);
+        Util.resetArrayCellGridIndex(canvasItems);
+        // canvasItems.forEach((item,index) => {
+        //   const cells = item.attrInfo.grid.cells;
+        //   cells.forEach(cell => cell.item && (cell.item.index = index))
+        // })
+        const activeItem = Util.getActiveItem(canvasItems);
+        // const activeItem = canvasItems.find(item => item.active === true);
         return {
           canvasItems,
           currentDropIndex:-2,
@@ -372,7 +396,6 @@ export default class FormDesign extends PureComponent {
   };
   render() {
     const { activeItem, currentDropIndex,canvasItems } = this.state;
-    console.log(canvasItems)
     return (
       <div className="fd-content">
         <div className="wf-panel wf-widgetspanel ">

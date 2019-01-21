@@ -12,7 +12,7 @@ class FormLayout extends PureComponent {
   state = {
     dragStart:false
   }
-  onDragStart = (event, data, index) => {
+  onDragStart = (event, data) => {
     this.setState({
       dragStart:true
     })
@@ -21,7 +21,7 @@ class FormLayout extends PureComponent {
       tag: data.type,
       type: "move",
       data: data,
-      index: index
+      index: data.gridIndex
     });
   };
   onDragEnd = () => {
@@ -30,7 +30,7 @@ class FormLayout extends PureComponent {
     })
   }
   onDropFormLayout = (item) => {
-    const { dataSet, onDrop, gridIndex } = this.props;
+    const { dataSet, onDrop } = this.props;
     const { active } = dataSet;
     if (!active) {
       return;
@@ -47,9 +47,9 @@ class FormLayout extends PureComponent {
       removeField: this.removeFields
     });
   };
-  removeFields = (item,cellIndex) => {
-    const { gridIndex, removeField } = this.props;
-    removeField(item, gridIndex, cellIndex);
+  removeFields = (item) => {
+    const { removeField } = this.props;
+    removeField(item);
   };
   activeFields = (item) => {
     const { activeField } = this.props;
@@ -96,7 +96,7 @@ class FormLayout extends PureComponent {
   //   );
   // })}
   render() {
-    const { dataSet, isDragging, activeField, removeField, gridIndex } = this.props;
+    const { dataSet, isDragging, activeField, removeField } = this.props;
     // console.log(this.props)
     const { dragStart } = this.state;
     const {
@@ -133,14 +133,14 @@ class FormLayout extends PureComponent {
           event.stopPropagation();
           activeField(dataSet);
         }}
-        onDragStart={event => this.onDragStart(event, dataSet, gridIndex)}
+        onDragStart={event => this.onDragStart(event, dataSet)}
         onDragEnd = {event => this.onDragEnd()}
       >
         <div
           className="wf-remove icon icon-close"
           onMouseDown={event => {
             event.stopPropagation();
-            removeField(dataSet, gridIndex);
+            removeField(dataSet);
           }}
         />
         <div style={GridStyle} className="grid">
