@@ -75,7 +75,7 @@ const deepClone = obj => {
 const initArray = num => {
   let arr = [];
   for (let i = 0; i < num; i++) {
-    arr[i] = { active: false };
+    arr[i] = { active: false};
   }
   return arr;
 };
@@ -117,6 +117,17 @@ const initLayoutValue = item => {
   };
   return { ...item, attrInfo, active: true };
 };
+const initGridCells = (arr) =>{
+  arr.forEach((item,index)=>{
+    const cells = item.attrInfo.grid.cells;
+    cells.forEach((subItem,cellIndex) => {
+      subItem.active = false;
+      subItem.item = null;
+      subItem.gridIndex = index;
+      subItem.cellIndex = cellIndex;
+    })
+  })
+}
 const activeIndex = (arr, index) => {
   arr[index].active = true;
 };
@@ -132,7 +143,7 @@ const addCellItem = (arr, gridIndex, cellIndex, cellItem) => {
   );
 };
 const addCanvasItem = (arr, index, item) => {
-  arr.splice(index, 0, initLayoutValue(item));
+  arr.splice(index+1, 0, initLayoutValue(item));
 };
 const updateCurrentCanvasItem = (arr, gridIndex, item) => {
   arr[gridIndex] = item;
@@ -141,8 +152,13 @@ const updateCurrentCellItem = (arr, gridIndex, cellIndex, item) => {
   arr[gridIndex].attrInfo.grid.cells[cellIndex].item = item;
 };
 const addCellItemGridIndex = (arr, index) => {
-  arr.index = index;
+  arr.gridIndex = index;
 };
+const isgridCellHascellItem = (arr,gridIndex,cellIndex) =>{
+   const item = arr[gridIndex].attrInfo.grid.cells[cellIndex].item;
+   const bool = item?true:false;
+   return bool;
+}
 export default {
   deepClone,
   initArray,
@@ -160,6 +176,8 @@ export default {
   resetArrayCellGridIndex,
   resetArrayCellActive,
   initLayoutValue,
+  initGridCells,
+  isgridCellHascellItem,
   layoutItems,
   baseItems
 };

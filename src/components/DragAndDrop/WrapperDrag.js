@@ -15,18 +15,9 @@ export default function WrapperDrag(Component, dragTag) {
       this.emitter.setDragData({ tag: dragTag, type: "new", data: dataSet });
       // event.dataTransfer.setData('text','123')
       this.setState({ dragStart: true });
-      // if(!onDragStart){
-      //   return 
-      // }
-      // onDragStart( event, dataSet);
     };
     onDragEnd = () => {
       this.setState({ dragStart: false });
-      // const{onDragEnd} = this.props;
-      // if(!onDragEnd){
-      //   return 
-      // }
-      // onDragEnd()
     };
     render() {
       const { draggable, dragStart } = this.state;

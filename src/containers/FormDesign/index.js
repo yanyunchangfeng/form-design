@@ -37,7 +37,8 @@ export default class FormDesign extends PureComponent {
       prevState => {
         const canvasItems = [...prevState.canvasItems];
         Util.resetArrayActive(canvasItems);
-        Util.addCanvasItem(canvasItems,this.state.currentDropIndex+1,item);
+        Util.addCanvasItem(canvasItems,this.state.currentDropIndex,item);
+        Util.initGridCells(canvasItems);
         const activeItem = Util.getActiveItem(canvasItems);
         Util.addArrayIndex(canvasItems)
         return {
@@ -97,16 +98,24 @@ export default class FormDesign extends PureComponent {
        })
      }
   }
-  updateBaseState(item, gridIndex) {
+  updateBaseState(item) {
     this.setState(
       prevState => {
         let canvasItems = [...prevState.canvasItems];
+        const gridIndex = item.gridIndex;
         const cellIndex = item.cellIndex;
+        const active = item.active;
+        if(cellIndex!==undefined){
+          if(!active){
+            if(Util.isgridCellHascellItem(canvasItems,gridIndex,cellIndex)){
+              return 
+            }
+          }
+        }
         Util.resetCellActive(canvasItems,gridIndex,cellIndex);
         Util.addCellItem(canvasItems,gridIndex,cellIndex,item);
         Util.activeIndex(canvasItems[gridIndex].attrInfo.grid.cells,cellIndex)
         const activeItem = Util.getCellActiveItem(canvasItems,gridIndex,cellIndex)
-        // activeItem.index = gridIndex;
         Util.addCellItemGridIndex(activeItem,gridIndex);
         return {
           currentDropIndex: -2,
@@ -120,9 +129,6 @@ export default class FormDesign extends PureComponent {
       }
     );
   }
-  onDragEnd = () => {
-    this.setState({ currentDropIndex: -2 });
-  };
   //文本块dragover事件
   FieldDragOver = (event, dataSet, comp) => {
     data$.subscribe(dragData => {
@@ -184,15 +190,13 @@ export default class FormDesign extends PureComponent {
         return FieldCorAttr[item.type].showField({
           dataSet: { ...item},
           key: index,
-          index:index,
+          gridIndex:index,
           currentDropIndex,
           moveField: this.moveField,
           removeField: this.removeField,
           activeField: this.activeField,
           onDragOver: this.FieldDragOver,
-          // onDragEnd: this.onDragEnd,
           onDrop: this.onDrop,
-          // onDragStart: this.onDragStart
         });
     });
   };
@@ -229,21 +233,7 @@ export default class FormDesign extends PureComponent {
           }
           Util.activeIndex(canvasItems,gridIndex);
           activeItem = Util.getActiveItem(canvasItems);
-          return {canvasItems, activeItem}
-          // canvasItems.forEach(item => {
-          //   item.active = false;
-          //   const cells = item.attrInfo.grid.cells;
-          //   cells.forEach(cell => cell.active = false);
-          // });
-          // canvasItems = [
-          //   ...canvasItems.slice(0, gridIndex),
-          //   { ...item, active: true },
-          //   ...canvasItems.slice(gridIndex + 1)
-          // ];
-          
-          // const activeItem = Util.getCellActiveItem(canvasItems,gridIndex,cellIndex) ;
-          // const activeItem = canvasItems.find(item => item.active === true);
-          
+          return {canvasItems, activeItem}       
         },
         () => {
           this.saveToOuter(this.state.canvasItems);
@@ -251,13 +241,30 @@ export default class FormDesign extends PureComponent {
       );
     }
   };
-  removeField = (item, gridIndex, cellIndex ) => {
+  removeField = (item ) => {
     if (item.type !== "grid") {
       this.setState(
         prevState => {
           const canvasItems = [...prevState.canvasItems];
-          canvasItems[gridIndex].attrInfo.grid.cells[cellIndex].item = null
+          const gridIndex = item.gridIndex;
+          const cellIndex = item.cellIndex;
+          const active = item.active;
+   
           let activeItem;
+          if(cellIndex!==undefined){
+            if(!active){
+              Util.updateCurrentCellItem(canvasItems,gridIndex,cellIndex,null);
+              return canvasItems;
+            }else{
+              Util.updateCurrentCellItem(canvasItems,gridIndex,cellIndex,null);
+              activeItem = Util.getActiveItem(canvasItems)
+              return {
+                canvasItems,
+                activeItem
+              }
+            }
+          }
+
           if (!item.active) {
             return {
               canvasItems
@@ -298,6 +305,7 @@ export default class FormDesign extends PureComponent {
             }
           }
           canvasItems.splice(gridIndex, 1);
+          Util.addArrayIndex(canvasItems);
           if(!active){
             return {
               canvasItems
@@ -309,18 +317,6 @@ export default class FormDesign extends PureComponent {
               activeItem
             }
           }
-         
-          // activeItem = null;
-          // return {canvasItems,activeItem}
-          // let activeItem;
-          // if (!item.active) {
-          //   return {
-          //     canvasItems
-          //   };
-          // } else {
-          //   activeItem = null;
-          //   return { canvasItems, activeItem };
-          // }
         },
         () => {
           this.saveToOuter(this.state.canvasItems);
@@ -343,6 +339,7 @@ export default class FormDesign extends PureComponent {
         // });
         Util.resetArrayCellActive(canvasItems);
         Util.addArrayIndex(canvasItems);
+        Util.initGridCells(canvasItems);
         Util.resetArrayCellGridIndex(canvasItems);
         // canvasItems.forEach((item,index) => {
         //   const cells = item.attrInfo.grid.cells;
@@ -370,7 +367,6 @@ export default class FormDesign extends PureComponent {
           const gridIndex = item.gridIndex;
           const cellIndex = item.cellIndex;
           Util.updateCurrentCellItem(canvasItems,gridIndex,cellIndex,item);
-          // canvasItems[gridIndex].attrInfo.grid.cells[cellIndex].item = item;
           const activeItem = item;
           return { canvasItems, activeItem };
         },
@@ -390,13 +386,9 @@ export default class FormDesign extends PureComponent {
             activeItem = Util.getCellActiveItem(canvasItems,gridIndex,cellIndex);
             return { canvasItems,activeItem}
           }
-          Util.updateCurrentCanvasItem(canvasItems,gridIndex,item)
-          // Util.activeIndex(canvasItems,index);
+          Util.updateCurrentCanvasItem(canvasItems,gridIndex,item);
           activeItem = Util.getActiveItem(canvasItems);
           return {canvasItems,activeItem}
-          // canvasItems[gridIndex] = item;
-          // const activeItem = item;
-          // return { canvasItems, activeItem };
         },
         () => {
           this.saveToOuter(this.state.canvasItems);
@@ -409,7 +401,7 @@ export default class FormDesign extends PureComponent {
     this.props.onSave(fieldsData);
   };
   render() {
-    const { activeItem, currentDropIndex,canvasItems } = this.state;
+    const { activeItem, currentDropIndex } = this.state;
     return (
       <div className="fd-content">
         <div className="wf-panel wf-widgetspanel ">

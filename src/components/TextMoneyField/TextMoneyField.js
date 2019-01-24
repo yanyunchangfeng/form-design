@@ -6,7 +6,7 @@ class TextNumberField extends PureComponent {
   render() {
     const { dataSet, isDragging, activeField, removeField } = this.props;
     const {
-      attrInfo: { titleValue, tipValue, verifyValue,row,col},
+      attrInfo: { titleValue, tipValue, verifyValue},
       active,
       cellIndex
     } = dataSet;

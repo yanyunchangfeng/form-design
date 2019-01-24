@@ -41,6 +41,7 @@ class FormLayout extends PureComponent {
     onDrop(item);
   };
   generateField = (data, active, type) => {
+    const parentProps = this.props
     return FieldCorAttr[type].showField({
       dataSet: { ...data, active },
       activeField: this.activeFields,
@@ -59,45 +60,9 @@ class FormLayout extends PureComponent {
     }
     activeField(item);
   };
-  // {layout.map((val, index) => {
-  //   return (
-  //     <div className="flex-row" key={index}>
-  //       {val.col.map((item, idx) => {
-  //         return (
-  //           <Fragment key={idx}>
-  //             <div className="flex-item">
-  //               <GridCol
-  //                 onDropFormLayout={(item, row, col) =>
-  //                   this.onDropFormLayout(item, row, col)
-  //                 }
-  //                 row={index}
-  //                 col={idx}
-  //                 layout={layout}
-  //                 {...this.props}
-  //               >
-  //                 {item.item
-  //                   ? this.generateField(
-  //                       item.item,
-  //                       item.active,
-  //                       item.item.type
-  //                     )
-  //                   : ""}
-  //               </GridCol>
-  //             </div>
-  //             {idx !== val.col.length - 1 ? (
-  //               <div className="resizer" />
-  //             ) : (
-  //               ""
-  //             )}
-  //           </Fragment>
-  //         );
-  //       })}
-  //     </div>
-  //   );
-  // })}
   render() {
     const { dataSet, isDragging, activeField, removeField } = this.props;
-    // console.log(this.props)
+    console.log(this.props)
     const { dragStart } = this.state;
     const {
       active,
@@ -155,13 +120,13 @@ class FormLayout extends PureComponent {
                                 cellIndex={index}
                                 {...this.props}
                               >
-                                {item.item
-                                  ? this.generateField(
-                                      item.item,
-                                      item.active,
-                                      item.item.type
-                                    )
-                                  : ""}
+                             {item.item
+                                ? this.generateField(
+                                    item.item,
+                                    item.active,
+                                    item.item.type
+                                  )
+                                : ""}
                 </GridCol>
                 {true?<div className="resizer"></div>:''}
                 </div>
@@ -173,4 +138,4 @@ class FormLayout extends PureComponent {
   }
 }
 
-export default WrapperDrop(WrapperDrag(FormLayout));
+export default WrapperDrop(WrapperDrag(FormLayout),['grid','base']);

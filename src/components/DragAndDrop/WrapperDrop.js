@@ -1,7 +1,7 @@
 import React, { PureComponent, Fragment } from "react";
 import emitter from "../../directive/dragdropdirective";
 import { take } from "rxjs/operators";
-export default function WrapperDrop(Component) {
+export default function WrapperDrop(Component,dropTags) {
   return class DropElement extends PureComponent {
     componentDidMount() {
       this.emitter = emitter;
@@ -70,10 +70,7 @@ export default function WrapperDrop(Component) {
       });
     };
     render() {
-      const { currentDropIndex, dataSet, index } = this.props;
-      // const { gridIndex } = dataSet
-      // console.log(gridIndex)
-      // console.log(this.props)
+      const { currentDropIndex, dataSet, gridIndex } = this.props;
       return (
         <Fragment>
           <div
@@ -85,8 +82,8 @@ export default function WrapperDrop(Component) {
             }}
             style={dataSet ? {} : { height: "100%" }}
           >
-            <Component {...this.props} {...this.state} />
-            {currentDropIndex === index ? (
+            <Component {...this.props} {...this.state} dropTags={dropTags}/>
+            {currentDropIndex === gridIndex ? (
               <div className="wf-dragging-mark" />
             ) : (
               ""

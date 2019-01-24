@@ -1,30 +1,41 @@
 import React, { PureComponent } from "react";
 import FieldCorAttr from "../../utils/field-cor-attr.js";
 import emitter from "../../directive/dragdropdirective";
-import WrapperDrop from "../DragAndDrop/WrapperDrop.js";
-import WrapperDrag from "../DragAndDrop/WrapperDrag.js";
 import Util from "../../utils/common";
 import { take } from "rxjs/operators";
 import PropTypes from "prop-types";
 const emitter$ = emitter;
 const data$ = emitter$.getDragData().pipe(take(1));
 
-class GridCol extends PureComponent {
+class CellBase extends PureComponent {
   state = {
-    dropTags: this.props.dropTags,
+    dropTags: ['base'],
     dragenter: false
   };
+  generateField = () => {
+    const { currentCell } = this.props;
+    console.log(currentCell)
+    return (
+      <div>
+         <div>
+   
+         </div>
+      </div>
+    )
+    // return FieldCorAttr[type].showField({
+    //   dataSet: { ...data, active },
+    //   activeField: this.activeFields,
+    //   removeField: this.removeFields
+    // });
+  };
   onDragEnter = event => {
-    event.stopPropagation();
-    event.preventDefault();
     const {
       dataSet: { active},
       cells,
       cellIndex
     } = this.props;
+    console.log(cells,cellIndex)
     const { dropTags } = this.state;
-    const {parentProps} = this.props;
-    console.log(this.props)
     event.preventDefault();
     event.stopPropagation();
     data$.subscribe(dragData => {
@@ -43,7 +54,6 @@ class GridCol extends PureComponent {
     event.stopPropagation();
   };
   onDragLeave = () => {
-    // event.stopPropagation();
     const {
       dataSet: { active },
       cells,
@@ -95,22 +105,21 @@ class GridCol extends PureComponent {
   };
   render() {
     const { dragenter } = this.state;
-    const { children} =  this.props;
     return (
       <div
         className={`${dragenter ? "drag-enter" : ""}`}
-        onDragEnter={event => this.onDragEnter(event)}
-        onDragLeave={event => this.onDragLeave(event)}
+        onDragEnter={this.onDragEnter}
+        onDragLeave={this.onDragLeave}
         onDrop={event => this.onDrops(event)}
-        onDragOver={event => this.onDragOver(event)}
+        onDragOver={this.onDragOver}
         style={{ height: "100%" ,display:'flex',flex:1,minHeight:'50px'}}
       >
-          {children}
+          {this.generateField()}
       </div>
     );
   }
 }
-GridCol.propTypes = {
+CellBase.propTypes = {
   dataSet: PropTypes.object
 };
-export default GridCol;
+export default CellBase;
