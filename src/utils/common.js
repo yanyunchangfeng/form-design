@@ -159,6 +159,12 @@ const isgridCellHascellItem = (arr,gridIndex,cellIndex) =>{
    const bool = item?true:false;
    return bool;
 }
+const addGridCellGridBaseItem =(arr,gridIndex,cellGridIndex,cellIndex,item) =>{
+ arr[gridIndex].attrInfo.grid.cells[cellGridIndex].item.attrInfo.grid.cells[cellIndex].item= initLayoutValue(item)
+}
+const getGridCellGridCellActiveItem =(arr,gridIndex,cellGridIndex,cellIndex)=>{
+   return  arr[gridIndex].attrInfo.grid.cells[cellGridIndex].item.attrInfo.grid.cells[cellIndex].item
+}
 export default {
   deepClone,
   initArray,
@@ -178,6 +184,8 @@ export default {
   initLayoutValue,
   initGridCells,
   isgridCellHascellItem,
+  addGridCellGridBaseItem,
+  getGridCellGridCellActiveItem,
   layoutItems,
   baseItems
 };

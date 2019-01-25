@@ -1,8 +1,8 @@
 import React, { PureComponent } from "react";
 import FieldCorAttr from "../../utils/field-cor-attr.js";
 import emitter from "../../directive/dragdropdirective";
-import WrapperDrop from "../DragAndDrop/WrapperDrop.js";
-import WrapperDrag from "../DragAndDrop/WrapperDrag.js";
+// import WrapperDrop from "../DragAndDrop/WrapperDrop.js";
+// import WrapperDrag from "../DragAndDrop/WrapperDrag.js";
 import Util from "../../utils/common";
 import { take } from "rxjs/operators";
 import PropTypes from "prop-types";
@@ -23,10 +23,6 @@ class GridCol extends PureComponent {
       cellIndex
     } = this.props;
     const { dropTags } = this.state;
-    const {parentProps} = this.props;
-    console.log(this.props)
-    event.preventDefault();
-    event.stopPropagation();
     data$.subscribe(dragData => {
       if (dropTags.indexOf(dragData.tag) > -1) {
         if (!active) {
@@ -43,13 +39,14 @@ class GridCol extends PureComponent {
     event.stopPropagation();
   };
   onDragLeave = () => {
-    // event.stopPropagation();
     const {
       dataSet: { active },
       cells,
-      cellIndex
+      cellIndex,
+     
     } = this.props;
     const { dropTags } = this.state;
+    
     data$.subscribe(dragData => {
       if (dropTags.indexOf(dragData.tag) > -1) {
         if (!active) {
@@ -67,9 +64,12 @@ class GridCol extends PureComponent {
       onDropFormLayout,
       cellIndex,
       cells,
+      parent,
+      cellGridIndex
     } = this.props;
     event.stopPropagation();
     event.preventDefault();
+    // console.log(parent)
     const { dropTags } = this.state;
     data$.subscribe(dragData => {
       const tag = dragData.tag;
@@ -87,7 +87,13 @@ class GridCol extends PureComponent {
             ...baseInfo,
             
           };
-          const item = { ...dragData.data, attrInfo,gridIndex,cellIndex };
+          let item;
+          if(parent){
+             item ={...dragData.data,attrInfo,gridIndex,cellGridIndex,cellIndex}
+          }else{
+             item = { ...dragData.data, attrInfo,gridIndex,cellIndex };
+          }
+          
           onDropFormLayout(item);
         }
       }

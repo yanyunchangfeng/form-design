@@ -7,7 +7,7 @@ var CleanWebpackPlugin = require("clean-webpack-plugin");
 
 module.exports = {
   entry: {
-    app: path.resolve(__dirname, "app/index.jsx"),
+    app: path.resolve(__dirname, "examples/src/index.js"),
     // 将 第三方依赖(node_modules中的) 单独打包
     vendor: Object.keys(pkg.dependencies)
   },
@@ -54,7 +54,7 @@ module.exports = {
         ]
       },
       {
-        test: /\.(png|woff|woff2|svg|tff|eot)()/i,
+        test: /\.(woff|woff2|svg|tff|eot)()/i,
         use: [
           {
             loader: "url-loader",
@@ -82,7 +82,7 @@ module.exports = {
     new CleanWebpackPlugin(["build"]),
     // html 模板插件
     new HtmlWebpackPlugin({
-      template: __dirname + "/app/index.tmpl.html"
+      template: __dirname + "/examples/index.html"
     }),
     new MiniCssExtractPlugin({
       // Options similar to the same options in webpackOptions.output

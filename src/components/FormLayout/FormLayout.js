@@ -40,12 +40,17 @@ class FormLayout extends PureComponent {
     }
     onDrop(item);
   };
-  generateField = (data, active, type) => {
-    const parentProps = this.props
+  generateField = (data,index) => {
+    const {onDrop,dataSet} = this.props;
+    const active = data.active;
+    const type = data.type;
     return FieldCorAttr[type].showField({
       dataSet: { ...data, active },
       activeField: this.activeFields,
-      removeField: this.removeFields
+      removeField: this.removeFields,
+      onDrop: onDrop,
+      parent:dataSet,
+      cellGridIndex:index
     });
   };
   removeFields = (item) => {
@@ -61,8 +66,7 @@ class FormLayout extends PureComponent {
     activeField(item);
   };
   render() {
-    const { dataSet, isDragging, activeField, removeField } = this.props;
-    console.log(this.props)
+    const { dataSet, isDragging, activeField, removeField, draggable} = this.props;
     const { dragStart } = this.state;
     const {
       active,
@@ -93,7 +97,7 @@ class FormLayout extends PureComponent {
      
       <div
         className={`wf-component wf-component-textfield ${status} ${dragStart? 'drag-start':''}`}
-        draggable
+        draggable={draggable}
         onMouseDown={ event => {
           event.stopPropagation();
           activeField(dataSet);
@@ -123,8 +127,7 @@ class FormLayout extends PureComponent {
                              {item.item
                                 ? this.generateField(
                                     item.item,
-                                    item.active,
-                                    item.item.type
+                                    index
                                   )
                                 : ""}
                 </GridCol>

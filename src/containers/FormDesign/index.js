@@ -78,6 +78,7 @@ export default class FormDesign extends PureComponent {
   onDrop = (item) => {
     const gridIndex = item.gridIndex;
     const cellIndex = item.cellIndex;
+    const cellGridIndex = item.cellGridIndex;
     data$.subscribe(dragData => {
       if (this.state.dropTags.indexOf(dragData.tag) > -1) {
         if(cellIndex===undefined){
@@ -86,7 +87,12 @@ export default class FormDesign extends PureComponent {
           this.updateGridIndexGridState(item,gridIndex,cellIndex)
         }  
       } else {
-        this.updateBaseState(item, gridIndex, cellIndex);
+        if(cellGridIndex===undefined){
+          this.updateBaseState(item, gridIndex, cellIndex);
+        }else{
+          console.log('doadd cellgrid')
+          this.updateGridCellGridBase(item)
+        }
       }
     });
   };
@@ -97,6 +103,27 @@ export default class FormDesign extends PureComponent {
          this.saveToOuter(canvasItems)
        })
      }
+  }
+  updateGridCellGridBase(item){
+    this.setState(
+      prevState => {
+        let canvasItems = [...prevState.canvasItems];
+        const gridIndex = item.gridIndex;
+        const cellGridIndex = item.cellGridIndex;
+        const cellIndex = item.cellIndex
+        Util.addGridCellGridBaseItem(canvasItems,gridIndex,cellGridIndex,cellIndex,item);
+        const activeItem = Util.getGridCellGridCellActiveItem(canvasItems,gridIndex,cellGridIndex,cellIndex);
+        return {
+          currentDropIndex: -2,
+          activeItem,
+          canvasItems
+        };
+      },
+      () => {
+        this.saveToOuter(this.state.canvasItems);
+        //用该函数来监听渲染是否完成
+      }
+    );
   }
   updateBaseState(item) {
     this.setState(
