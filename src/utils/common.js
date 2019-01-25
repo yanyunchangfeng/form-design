@@ -156,14 +156,29 @@ const addCellItemGridIndex = (arr, index) => {
 };
 const isgridCellHascellItem = (arr,gridIndex,cellIndex) =>{
    const item = arr[gridIndex].attrInfo.grid.cells[cellIndex].item;
-   const bool = item?true:false;
+   const bool = item ? true : false;
    return bool;
 }
 const addGridCellGridBaseItem =(arr,gridIndex,cellGridIndex,cellIndex,item) =>{
  arr[gridIndex].attrInfo.grid.cells[cellGridIndex].item.attrInfo.grid.cells[cellIndex].item= initLayoutValue(item)
 }
+const updateGridCellGridBaseItem =(arr,gridIndex,cellGridIndex,cellIndex,item)=>{
+  arr[gridIndex].attrInfo.grid.cells[cellGridIndex].item.attrInfo.grid.cells[cellIndex].item = item;
+}
 const getGridCellGridCellActiveItem =(arr,gridIndex,cellGridIndex,cellIndex)=>{
    return  arr[gridIndex].attrInfo.grid.cells[cellGridIndex].item.attrInfo.grid.cells[cellIndex].item
+}
+const resetGridCellGridCellActive = (arr,gridIndex,cellGridIndex,cellIndex)=>{
+    const gridCellGridCell = arr[gridIndex].attrInfo.grid.cells[cellGridIndex].item.attrInfo.grid.cells;
+    gridCellGridCell.forEach(item => item.active = false);
+    gridCellGridCell[cellIndex].active = true;
+}
+const resetAllGridCellGridCellActice = (arr,gridIndex) =>{
+  const cells = arr[gridIndex].attrInfo.grid.cells;
+  cells.forEach(item=>{
+    item.item&&item.item.type==='grid'&&item.item.attrInfo.grid.cells.forEach(item=>item.active=false)
+  })
+
 }
 export default {
   deepClone,
@@ -185,7 +200,10 @@ export default {
   initGridCells,
   isgridCellHascellItem,
   addGridCellGridBaseItem,
+  updateGridCellGridBaseItem,
   getGridCellGridCellActiveItem,
+  resetGridCellGridCellActive,
+  resetAllGridCellGridCellActice,
   layoutItems,
   baseItems
 };

@@ -12,7 +12,7 @@ module.exports = {
     vendor: Object.keys(pkg.dependencies)
   },
   output: {
-    path: __dirname + "/build",
+    path: __dirname + "/docs",
     filename: "[name].[chunkhash:8].js"
   },
 
@@ -79,7 +79,7 @@ module.exports = {
   plugins: [
     // webpack 内置的 banner-plugin
     new webpack.BannerPlugin("Copyright by wangfupeng1988@github.com."),
-    new CleanWebpackPlugin(["build"]),
+    new CleanWebpackPlugin(["docs"]),
     // html 模板插件
     new HtmlWebpackPlugin({
       template: __dirname + "/examples/index.html"

@@ -40,9 +40,8 @@ class FormLayout extends PureComponent {
     }
     onDrop(item);
   };
-  generateField = (data,index) => {
+  generateField = (data,active,index) => {
     const {onDrop,dataSet} = this.props;
-    const active = data.active;
     const type = data.type;
     return FieldCorAttr[type].showField({
       dataSet: { ...data, active },
@@ -127,6 +126,7 @@ class FormLayout extends PureComponent {
                              {item.item
                                 ? this.generateField(
                                     item.item,
+                                    item.active,
                                     index
                                   )
                                 : ""}

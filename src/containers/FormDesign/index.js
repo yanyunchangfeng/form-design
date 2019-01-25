@@ -38,7 +38,7 @@ export default class FormDesign extends PureComponent {
         const canvasItems = [...prevState.canvasItems];
         Util.resetArrayActive(canvasItems);
         Util.addCanvasItem(canvasItems,this.state.currentDropIndex,item);
-        Util.initGridCells(canvasItems);
+        // Util.initGridCells(canvasItems);
         const activeItem = Util.getActiveItem(canvasItems);
         Util.addArrayIndex(canvasItems)
         return {
@@ -110,7 +110,8 @@ export default class FormDesign extends PureComponent {
         let canvasItems = [...prevState.canvasItems];
         const gridIndex = item.gridIndex;
         const cellGridIndex = item.cellGridIndex;
-        const cellIndex = item.cellIndex
+        const cellIndex = item.cellIndex;
+        Util.resetGridCellGridCellActive(canvasItems,gridIndex,cellGridIndex,cellIndex);
         Util.addGridCellGridBaseItem(canvasItems,gridIndex,cellGridIndex,cellIndex,item);
         const activeItem = Util.getGridCellGridCellActiveItem(canvasItems,gridIndex,cellGridIndex,cellIndex);
         return {
@@ -140,8 +141,10 @@ export default class FormDesign extends PureComponent {
           }
         }
         Util.resetCellActive(canvasItems,gridIndex,cellIndex);
+        // Util.resetGridCellGridCellActive(canvasItems,gridIndex,cellIndex)
+        Util.resetAllGridCellGridCellActice(canvasItems,gridIndex);
         Util.addCellItem(canvasItems,gridIndex,cellIndex,item);
-        Util.activeIndex(canvasItems[gridIndex].attrInfo.grid.cells,cellIndex)
+        // Util.activeIndex(canvasItems[gridIndex].attrInfo.grid.cells,cellIndex)
         const activeItem = Util.getCellActiveItem(canvasItems,gridIndex,cellIndex)
         Util.addCellItemGridIndex(activeItem,gridIndex);
         return {
@@ -233,12 +236,23 @@ export default class FormDesign extends PureComponent {
         prevState => {
           let canvasItems = [...prevState.canvasItems];
           const gridIndex = item.gridIndex;
+          const cellGridIndex = item.cellGridIndex;
           const cellIndex = item.cellIndex;
-          Util.resetArrayActive(canvasItems);
-          Util.activeIndex(canvasItems,gridIndex)
-          Util.activeIndex(canvasItems[gridIndex].attrInfo.grid.cells,cellIndex)
-          const activeItem = Util.getCellActiveItem(canvasItems,gridIndex,cellIndex);
-          return { activeItem };
+          let activeItem;
+          if(cellGridIndex === undefined){
+            Util.resetArrayActive(canvasItems);
+            Util.activeIndex(canvasItems,gridIndex)
+            Util.activeIndex(canvasItems[gridIndex].attrInfo.grid.cells,cellIndex);
+            Util.resetAllGridCellGridCellActice(canvasItems,gridIndex);
+            activeItem = Util.getCellActiveItem(canvasItems,gridIndex,cellIndex);
+            return { activeItem };
+          }
+          Util.resetCellActive(canvasItems,gridIndex,cellIndex)
+          Util.resetGridCellGridCellActive(canvasItems,gridIndex,cellGridIndex,cellIndex);
+          activeItem = Util.getGridCellGridCellActiveItem(canvasItems,gridIndex,cellGridIndex,cellIndex);
+          return {
+            activeItem
+          }
         },
         () => {
           this.saveToOuter(this.state.canvasItems);
@@ -392,10 +406,18 @@ export default class FormDesign extends PureComponent {
         prevState => {
           const canvasItems = [...prevState.canvasItems];
           const gridIndex = item.gridIndex;
+          const cellGridIndex = item.cellGridIndex;
           const cellIndex = item.cellIndex;
-          Util.updateCurrentCellItem(canvasItems,gridIndex,cellIndex,item);
           const activeItem = item;
-          return { canvasItems, activeItem };
+          if(cellGridIndex===undefined){
+            Util.updateCurrentCellItem(canvasItems,gridIndex,cellIndex,item);
+            return { canvasItems, activeItem };
+          } 
+          Util.updateGridCellGridBaseItem(canvasItems,gridIndex,cellGridIndex,cellIndex,item);
+          return {
+            canvasItems,
+            activeItem
+          }
         },
         () => {
           this.saveToOuter(this.state.canvasItems);
