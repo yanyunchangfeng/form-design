@@ -37,27 +37,81 @@ export default class FormDisplay extends PureComponent {
     //     );
     //   })}
     // </Row>
+    // {
+    //   return layout.map((val, index) => {
+    //     return (
+    //       <div className="flex-row" key={index}>
+    //         {val.col.map((item, idx) => {
+    //           return (
+               
+    //               <div className="flex-item" key={idx}>
+    //                 {item.item ? this.getFields(item.item) : ""}
+    //               </div>
+                
+    //           );
+    //         })}
+    //       </div>
+    //     );
+    //   });
+    // }
     const { fieldsData } = this.props;
     return (
       <div className="ant-advanced-search-form">
-        {fieldsData.map((items, i) => {
-          const layout = items.attrInfo.layout;
+        {fieldsData.map((items,index) => {
+          const grid = items.attrInfo.grid;
+          const {row,col,cells} = grid;
+          const GridStyle = {
+            display:'grid',
+            gridTemplateRows:`repeat(${row},1fr)`,
+            gridTemplateColumns:`repeat(${col},1fr)`
+          }
           {
-            return layout.map((val, index) => {
-              return (
-                <div className="flex-row" key={index}>
-                  {val.col.map((item, idx) => {
-                    return (
-                     
-                        <div className="flex-item" key={idx}>
-                          {item.item ? this.getFields(item.item) : ""}
-                        </div>
+            return (
+              <div className="grid" style={GridStyle} key={index}>
+                   {
+                     cells.map((item,idx)=>{
+                       const cellitem = item.item;
+                       const type = cellitem&&cellitem.type;
+                       switch (type){
+                         case 'grid':
+                            const grid = cellitem.attrInfo.grid;
+                            const {row,col,cells} = grid;
+                            const GridStyle = {
+                              display:'grid',
+                              gridTemplateRows:`repeat(${row},1fr)`,
+                              gridTemplateColumns:`repeat(${col},1fr)`
+                            }
+                            return (
+                              <div className="cell"key="idx">
+                                <div className="grid" style={GridStyle}>
+                                    {
+                                      cells.map((item,idx)=>{
+                                        const cellitem = item.item;
+                                        
+                                        return (<div className="cell" key={idx}>
+                                            {cellitem?this.getFields(cellitem):''}
+                                        </div>)
+                                      })
+                                    }
+                                </div>
+                              </div>
+                            )
+                            return ;
+                         default:
+                         return (
+                          <div className="cell" key={idx}>
+                               {cellitem?this.getFields(item.item):""}
+                               {
+                                 
+                               }
+                          </div>
+                        )
+                       }
                       
-                    );
-                  })}
-                </div>
-              );
-            });
+                     })
+                   }
+              </div>
+            )
           }
         })}
       </div>

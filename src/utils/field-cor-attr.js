@@ -348,7 +348,7 @@ const FieldCorAttr = {
     showAttr: rest => {
       return <FormLayoutAttr {...rest} />;
     },
-    getReallyField: (row, col) => {
+    getReallyField: () => {
       // let layout = [];
       // const span = 24 / col;
       // for (let i = 0; i < row; i++) {

@@ -402,7 +402,7 @@ export default class FormDesign extends PureComponent {
         // });
         Util.resetArrayCellActive(canvasItems);
         Util.addArrayIndex(canvasItems);
-        Util.initGridCells(canvasItems);
+        // Util.initGridCells(canvasItems);
         Util.resetArrayCellGridIndex(canvasItems);
         // canvasItems.forEach((item,index) => {
         //   const cells = item.attrInfo.grid.cells;
