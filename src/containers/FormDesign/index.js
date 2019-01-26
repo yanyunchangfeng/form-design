@@ -53,15 +53,18 @@ export default class FormDesign extends PureComponent {
       }
     );
   };
-  updateGridIndexGridState = (item ,gridIndex,cellIndex)=> {
+  updateGridIndexGridState = (item)=> {
     this.setState(
       prevState => {
+        const gridIndex = item.gridIndex;
+        const cellIndex = item.cellIndex;
         const canvasItems = [...prevState.canvasItems];
         Util.resetArrayActive(canvasItems);
+        Util.resetAllGridCellGridCellActice(canvasItems,gridIndex);
         Util.activeIndex(canvasItems,gridIndex);
-        Util.addCellItem(canvasItems,gridIndex,item.cellIndex,item);
-        Util.activeIndex(canvasItems[gridIndex].attrInfo.grid.cells,item.cellIndex)
-        const activeItem = Util.getCellActiveItem(canvasItems,gridIndex,item.cellIndex) ;
+        Util.addCellItem(canvasItems,gridIndex,cellIndex,item);
+        Util.activeIndex(canvasItems[gridIndex].attrInfo.grid.cells,cellIndex)
+        const activeItem = Util.getCellActiveItem(canvasItems,gridIndex,cellIndex) ;
         Util.addCellItemGridIndex(activeItem,gridIndex);
         return {
           activeItem,
@@ -90,7 +93,6 @@ export default class FormDesign extends PureComponent {
         if(cellGridIndex===undefined){
           this.updateBaseState(item, gridIndex, cellIndex);
         }else{
-          console.log('doadd cellgrid')
           this.updateGridCellGridBase(item)
         }
       }
@@ -238,6 +240,7 @@ export default class FormDesign extends PureComponent {
           const gridIndex = item.gridIndex;
           const cellGridIndex = item.cellGridIndex;
           const cellIndex = item.cellIndex;
+          const active = item.active;
           let activeItem;
           if(cellGridIndex === undefined){
             Util.resetArrayActive(canvasItems);
@@ -247,12 +250,17 @@ export default class FormDesign extends PureComponent {
             activeItem = Util.getCellActiveItem(canvasItems,gridIndex,cellIndex);
             return { activeItem };
           }
-          Util.resetCellActive(canvasItems,gridIndex,cellIndex)
-          Util.resetGridCellGridCellActive(canvasItems,gridIndex,cellGridIndex,cellIndex);
-          activeItem = Util.getGridCellGridCellActiveItem(canvasItems,gridIndex,cellGridIndex,cellIndex);
-          return {
-            activeItem
-          }
+          if(cellGridIndex!==undefined){
+            if(!active){
+              Util.resetCellActive(canvasItems,gridIndex,cellGridIndex);
+              Util.resetGridCellGridCellActive(canvasItems,gridIndex,cellGridIndex,cellIndex);
+              Util.activeIndex(canvasItems[gridIndex].attrInfo.grid.cells[cellGridIndex].item.attrInfo.grid.cells,cellIndex);
+              activeItem = Util.getGridCellGridCellActiveItem(canvasItems,gridIndex,cellGridIndex,cellIndex);
+              return {
+                activeItem
+              }
+            }
+          }       
         },
         () => {
           this.saveToOuter(this.state.canvasItems);
@@ -268,10 +276,12 @@ export default class FormDesign extends PureComponent {
           const cellIndex = item.cellIndex;
           if(cellIndex!==undefined){
             Util.activeIndex(canvasItems,gridIndex);
+            Util.resetAllGridCellGridCellActice(canvasItems,gridIndex);
             Util.activeIndex(canvasItems[gridIndex].attrInfo.grid.cells,cellIndex)
             activeItem = Util.getCellActiveItem(canvasItems,gridIndex,cellIndex);
             return { canvasItems, activeItem }
           }
+          Util.resetAllGridCellGridCellActice(canvasItems,gridIndex);
           Util.activeIndex(canvasItems,gridIndex);
           activeItem = Util.getActiveItem(canvasItems);
           return {canvasItems, activeItem}       
@@ -288,10 +298,22 @@ export default class FormDesign extends PureComponent {
         prevState => {
           const canvasItems = [...prevState.canvasItems];
           const gridIndex = item.gridIndex;
+          const cellGridIndex = item.cellGridIndex;
           const cellIndex = item.cellIndex;
           const active = item.active;
-   
           let activeItem;
+          if(cellGridIndex !== undefined){
+            if(!active){
+              Util.updateGridCellGridBaseItem(canvasItems,gridIndex,cellGridIndex,cellIndex,null);
+              return {canvasItems}
+            }
+              Util.updateGridCellGridBaseItem(canvasItems,gridIndex,cellGridIndex,cellIndex,null);
+              activeItem = Util.getCellActiveItem(canvasItems,gridIndex,cellGridIndex);
+              return {
+                canvasItems,
+                activeItem
+              }
+          }
           if(cellIndex!==undefined){
             if(!active){
               Util.updateCurrentCellItem(canvasItems,gridIndex,cellIndex,null);

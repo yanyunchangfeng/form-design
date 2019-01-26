@@ -59,8 +59,12 @@ class FormLayout extends PureComponent {
   activeFields = (item) => {
     const { activeField } = this.props;
     const active  = item.active;
-    if (active) {
-      return;
+    if(item.type==='grid'){
+      activeField(item);
+      return 
+    }
+    if(active){
+      return 
     }
     activeField(item);
   };

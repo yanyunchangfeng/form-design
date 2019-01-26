@@ -178,7 +178,6 @@ const resetAllGridCellGridCellActice = (arr,gridIndex) =>{
   cells.forEach(item=>{
     item.item&&item.item.type==='grid'&&item.item.attrInfo.grid.cells.forEach(item=>item.active=false)
   })
-
 }
 export default {
   deepClone,
